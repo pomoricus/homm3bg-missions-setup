@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Герои III — памятка</title>
-<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="theme.css?v=gold">
 <style>
   .views { margin: 0 0 0.7rem; }
-  .views button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .views button.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
   .filters { display: flex; flex-wrap: wrap; gap: 0.55rem 0.8rem; align-items: end; }
   label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.78rem; color: var(--muted); }
   input, select, button {
     background: var(--card);
     color: var(--fg);
     border: 1px solid var(--input-line);
-    border-radius: 8px;
+    border-radius: 2px;
     font: inherit;
     padding: 0.35rem 0.5rem;
   }
@@ -29,7 +29,7 @@
     align-self: start;
     max-height: calc(100vh - var(--head));
     overflow: auto;
-    border-right: 1px solid var(--line);
+    border-right: 1px solid var(--gold-dim);
     padding: 0.8rem 0.7rem 2rem;
   }
   nav.side a { display: block; color: var(--nav); text-decoration: none; padding: 0.12rem 0; font-size: 0.86rem; }
@@ -46,7 +46,7 @@
   .lead h2 { margin: 0.15rem 0 0.25rem; font-size: 1.05rem; }
   .lead p, .lead li { margin: 0.15rem 0; }
   .lead ul { margin: 0.15rem 0 0.35rem; padding-left: 1.15rem; }
-  .wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--card); max-height: 70vh; }
+  .wrap { overflow: auto; border: 1px solid var(--gold); box-shadow: var(--frame); border-radius: 2px; background: var(--card); max-height: 70vh; }
   table { border-collapse: separate; border-spacing: 0; min-width: 100%; }
   table.decks td:nth-child(2) { min-width: 22rem; }
   th, td { border-bottom: 1px solid var(--line); padding: 0.35rem 0.45rem; vertical-align: middle; }
@@ -64,7 +64,7 @@
   .pill {
     display: inline-block;
     padding: 0.05rem 0.45rem;
-    border-radius: 999px;
+    border-radius: 2px;
     background: var(--pill-bg);
     color: var(--pill-fg);
     border: 1px solid var(--line);
@@ -101,7 +101,7 @@
   .mode.q { border-color: var(--mode-q-bd); background: var(--mode-q-bg); }
   #grid, #decks, #modes-intro { scroll-margin-top: calc(var(--head) + 8px); }
   .modes-intro { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 0.55rem; margin: 0 0 1rem; }
-  .mode-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem 0.7rem; }
+  .mode-card { background: var(--card); border: 1px solid var(--gold); box-shadow: var(--frame); border-radius: 2px; padding: 0.55rem 0.7rem; }
   .mode-card h2 { margin: 0 0 0.2rem; font-size: 0.98rem; }
   .mode-card p { margin: 0; color: var(--fg); }
   body[data-view="deck"] .only-mech, body[data-view="deck"] #mech-view { display: none; }
@@ -117,7 +117,7 @@
   }
 </style>
 </head>
-<body data-theme="light" data-view="mech">
+<body data-theme="dark" data-view="mech">
 <header class="top">
   <div class="title-row">
     <h1>Герои III</h1>
@@ -566,7 +566,7 @@ document.getElementById("jump").addEventListener("click", () => {
 
 fillSelects();
 let saved = "light";
-try { saved = localStorage.getItem("homm3-mechanics-theme") || "light"; } catch (e) {}
+try { saved = localStorage.getItem("homm3-mechanics-theme") || "dark"; } catch (e) {}
 applyTheme(saved === "dark" ? "dark" : "light");
 if (location.hash.indexOf("#d-") === 0) setView("deck");
 else render();
