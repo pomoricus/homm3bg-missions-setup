@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Герои III — миссии</title>
-<link rel="stylesheet" href="theme.css?v=gold">
+<link rel="stylesheet" href="theme.css?v=gold2">
 </head>
 <body data-theme="dark">
 <header class="top">
@@ -6276,22 +6276,68 @@ function tile(code, box) {
   const page = D.pages[box][code];
   let out = '<a href="pdf/' + D.guides[box] + "#page=" + page + '" target="_blank" rel="noopener">' + code + "</a>";
   const alias = (D.alias[box] || {})[code];
-  if (alias) out += ' <span class="alias">(в гиде подписан ' + alias + ")</span>";
+  if (alias) out += ' <span class="alias">(' + alias + ")</span>";
   return out;
 }
 function tiles(box, list) { return list.map(function (c) { return tile(c, box); }).join(", "); }
-function tileNeed(type, n, have) {
-  let text = n + " " + (n === 1 ? TYPE[type][0] : TYPE[type][1]) + ".";
-  const pool = D.tiles[type];
-  const core = pool[0][0] === "core" ? pool[0][1] : [];
-  if (core.length && n <= core.length) return text + " В базе: " + tiles("core", core) + ".";
-  const extra = pool.filter(function (p) { return p[0] !== "core" && have[p[0]]; });
-  if (core.length) text += " В базе только " + core.length + ": " + tiles("core", core) + ". Ещё " + (n - core.length) + " — из дополнений: ";
-  else text += " Есть в коробках: ";
-  text += extra.length
-    ? extra.map(function (p) { return BOX_NAME[p[0]] + " " + tiles(p[0], p[1]); }).join("; ") + "."
-    : '<span class="warn">отмеченных коробок с такими тайлами нет</span>.';
-  return text;
+const TYPE_ORDER = ["start", "far", "near", "center", "sea", "seacenter", "under", "undercenter"];
+const TYPE_HEAD = {
+  start: "Стартовые (I)", far: "Дальние (II–III)", near: "Ближние (IV–V)", center: "Центральные (VI–VII)",
+  sea: "Морские ближние (IV–V)", seacenter: "Морские центральные (VI–VII)",
+  under: "Подземные ближние (IV–V)", undercenter: "Подземные центральные (VI–VII)"
+};
+const BOX_ROW = ["core", "tower", "sg", "sg2", "rampart", "fortress", "inferno", "stronghold", "conflux", "cove", "naval", "field"];
+function tileCells(box, list) {
+  return list.map(function (c) { return '<span class="code">' + tile(c, box) + "</span>"; }).join("");
+}
+function tileTable(needs, have) {
+  const byType = {};
+  needs.forEach(function (row) {
+    if (!byType[row.type]) byType[row.type] = { type: row.type, n: row.n, notes: [] };
+    if (row.note && byType[row.type].notes.indexOf(row.note) === -1) byType[row.type].notes.push(row.note);
+  });
+  const cols = [];
+  TYPE_ORDER.forEach(function (type) { if (byType[type]) cols.push(byType[type]); });
+  Object.keys(byType).forEach(function (type) { if (TYPE_ORDER.indexOf(type) === -1) cols.push(byType[type]); });
+  const pools = {};
+  const boxes = [];
+  cols.forEach(function (col) {
+    pools[col.type] = {};
+    (D.tiles[col.type] || []).forEach(function (p) {
+      if (!have[p[0]]) return;
+      pools[col.type][p[0]] = p[1];
+      if (boxes.indexOf(p[0]) === -1) boxes.push(p[0]);
+    });
+  });
+  boxes.sort(function (a, b) {
+    const ia = BOX_ROW.indexOf(a), ib = BOX_ROW.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+  let html = '<p class="tile-lead">Это все тайлы, которые можно положить в эту миссию. Выберите:</p>';
+  html += '<div class="tile-scroll"><table class="tilepick"><thead><tr><th></th>';
+  cols.forEach(function (col) {
+    html += '<th scope="col"><span class="role">' + (TYPE_HEAD[col.type] || col.type) + '</span><span class="take">' + col.n + "</span></th>";
+  });
+  html += "</tr></thead><tbody>";
+  if (!boxes.length) {
+    html += '<tr><td colspan="' + (cols.length + 1) + '"><span class="warn">отмеченных коробок с такими тайлами нет</span></td></tr>';
+  }
+  boxes.forEach(function (box) {
+    html += '<tr><th scope="row">' + BOX_NAME[box] + "</th>";
+    cols.forEach(function (col) {
+      const codes = pools[col.type][box];
+      html += "<td>" + (codes ? tileCells(box, codes) : '<span class="gap">—</span>') + "</td>";
+    });
+    html += "</tr>";
+  });
+  html += "</tbody></table></div>";
+  cols.forEach(function (col) {
+    if (!Object.keys(pools[col.type]).length) col.notes.push('<span class="warn">отмеченных коробок с такими тайлами нет</span>');
+  });
+  const notes = [];
+  cols.forEach(function (col) { col.notes.forEach(function (note) { notes.push("<li><b>" + (TYPE_HEAD[col.type] || col.type) + ".</b> " + note + "</li>"); }); });
+  if (notes.length) html += '<ul class="tile-notes">' + notes.join("") + "</ul>";
+  return html;
 }
 function mechA(name, mode) {
   const info = D.mechs[name];
@@ -6444,7 +6490,7 @@ function fill(text, ctx) {
     const name = i === -1 ? body : body.slice(0, i);
     const arg = i === -1 ? "" : body.slice(i + 1);
     switch (name) {
-      case "need": { const p = arg.split(":"); return tileNeed(p[0], count(p[1], ctx), ctx.have); }
+      case "need": { const p = arg.split(":"); return TYPE_HEAD[p[0]] || p[0]; }
       case "pool": return pool(arg, ctx.have);
       case "sel": {
         const alts = arg.split("|");
@@ -6486,7 +6532,7 @@ function packs(cfg, ctx) {
     return who + " — " + f[1] + " (" + BOX_NAME[f[2]] + "): доска города, 7 карт отрядов, карты героя, миниатюра героя, кубики фракции." + boxTag(ctx.have, f[2]);
   });
 }
-function items(list, ctx) {
+function items(list, ctx, keepNeed) {
   const out = [];
   (list || []).forEach(function (it) {
     if (typeof it !== "string") {
@@ -6494,6 +6540,15 @@ function items(list, ctx) {
       it = it.text;
     }
     if (it === "{packs}") { packs(ctx.cfg, ctx).forEach(function (x) { out.push(x); }); return; }
+    if (keepNeed && it.indexOf("{need:") !== -1) {
+      const rows = [];
+      const note = fill(it.replace(/\{need:[a-z]+:[^}]+\}/g, " "), ctx).replace(/\s+/g, " ").trim();
+      it.replace(/\{need:([a-z]+):([^}]+)\}/g, function (_, type, expr) {
+        rows.push({ type: type, n: count(expr, ctx), note: note });
+        return "";
+      });
+      if (rows.length) { out.push({ kind: "need", rows: rows }); return; }
+    }
     const t = fill(it, ctx);
     if (t) out.push(t);
   });
@@ -6503,7 +6558,7 @@ function render(cfg, have) {
   const ctx = context(cfg, have);
   const pl = cfg.pull;
   const p = {
-    tiles: items(pl.tiles, ctx), tokens: items(pl.tokens, ctx), players: items(pl.players, ctx),
+    tiles: items(pl.tiles, ctx, true), tokens: items(pl.tokens, ctx), players: items(pl.players, ctx),
     enemy: items(pl.enemy, ctx), skip: items(pl.skip, ctx),
     decks: baseDecks(have, cfg.decks_opt).concat(pl.decks.filter(function (d) { return cond(d.if, ctx); }).map(function (d) {
       return [d.deck[0], fill(d.deck[1], ctx)];
@@ -6547,9 +6602,24 @@ function optionsHtml(cfg, have) {
   if (no.length) out += '<p class="kicker">Не предлагаются: ' + no.join("; ") + ".</p>";
   return out;
 }
+function tilesSection(list, have) {
+  const needs = [];
+  const rest = [];
+  list.forEach(function (item) {
+    if (item && item.kind === "need") item.rows.forEach(function (row) { needs.push(row); });
+    else rest.push(item);
+  });
+  let html = "";
+  if (needs.length) html += tileTable(needs, have);
+  if (rest.length) html += li(rest);
+  return html;
+}
 function pullHtml(p, have) {
   const parts = ["<h2>Что выложить</h2>"];
-  function sec(title, list) { if (list && list.length) parts.push("<h3>" + title + "</h3>" + li(list)); }
+  function sec(title, list) {
+    if (!list || !list.length) return;
+    parts.push("<h3>" + title + "</h3>" + (title === "Тайлы карты" ? tilesSection(list, have) : li(list)));
+  }
   sec("Тайлы карты", p.tiles);
   sec("Жетоны и кубики", p.tokens);
   sec("Игроки", p.players);
@@ -6567,6 +6637,13 @@ function show(id) {
   document.querySelectorAll("main > [data-mission]").forEach(function (el) {
     el.hidden = el.getAttribute("data-mission") !== id;
   });
+  try { showBody(id); } catch (e) {
+    const root = document.querySelector('main > [data-mission="' + id + '"]');
+    const pull = root && root.querySelector(".pull");
+    if (pull) pull.innerHTML = '<p class="warn">Список не собрался: ' + String(e) + "</p>";
+  }
+}
+function showBody(id) {
   if (pick.value !== id) pick.value = id;
   const cfg = CFG[id];
   const root = document.querySelector('main > [data-mission="' + id + '"]');
@@ -6787,6 +6864,7 @@ document.addEventListener("click", function (ev) {
 });
 document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") kitPop.hidden = true; });
 window.addEventListener("scroll", function () { kitPop.hidden = true; }, true);
+try {
 renderPicks();
 
 const filt = load("homm3-filter", { mode: "all", box: "all" });
@@ -6804,9 +6882,14 @@ pick.value = start;
 applyFilter();
 fitHeader();
 if (place && place.id === current() && place.y) {
-  const restore = function () { window.scrollTo({ top: place.y, behavior: "instant" }); };
+  const restore = function () { window.scrollTo(0, place.y); };
   restore();
   window.addEventListener("load", restore);
+}
+} catch (e) {
+  document.querySelectorAll("main > [data-mission]").forEach(function (el, i) { el.hidden = i !== 0; });
+  const side = document.getElementById("side");
+  if (side) side.textContent = String(e);
 }
 </script>
 </body>
