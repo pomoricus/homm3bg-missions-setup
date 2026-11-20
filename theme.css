@@ -194,17 +194,19 @@ label.inline select#mission-pick { min-width: 18rem; max-width: 100%; }
 .filter-tag[aria-pressed="true"] { background: var(--accent); color: #fff; border-style: solid; }
 .filter-tag[aria-pressed="true"] small { color: inherit; }
 .kit-btn { font-size: 0.78rem; padding: 0.05rem 0.5rem; margin-left: 0.3rem; vertical-align: baseline; }
-dialog.kit {
-  border: 1px solid var(--line);
-  border-radius: 14px;
+.kit-pop {
+  position: fixed;
+  z-index: 30;
+  width: min(28rem, calc(100vw - 1rem));
   background: var(--card);
   color: var(--fg);
-  max-width: 34rem;
-  padding: 1.15rem 1.25rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem 0.85rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
 }
-dialog.kit::backdrop { background: rgba(0, 0, 0, 0.45); }
-dialog.kit h2 { margin: 0 0 0.6rem; font-size: 1.2rem; }
-dialog.kit p { margin: 0.4rem 0; }
+.kit-pop h2 { margin: 0 0 0.4rem; font-size: 1.05rem; }
+.kit-pop p { margin: 0.3rem 0; }
 .home-page { min-height: calc(100vh - 4.5rem); }
 .home-band { background: var(--card); border-bottom: 1px solid var(--line); }
 .home-wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.75rem; }
