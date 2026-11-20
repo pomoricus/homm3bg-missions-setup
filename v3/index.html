@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Герои III — кабинет</title>
+<link rel="stylesheet" href="cabinet.css">
+</head>
+<body data-theme="dark">
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">Герои III<small>подготовка к партии</small></div>
+    <button class="nav" type="button" data-go="style">Стиль</button>
+    <button class="nav" type="button" data-go="start">Старт</button>
+    <button class="nav" type="button" data-go="party">Партия</button>
+    <button class="nav" type="button" data-go="memo">Памятка</button>
+    <button class="nav" type="button" data-go="places">Локации</button>
+    <button class="nav" type="button" data-go="sources">Источники</button>
+    <div class="grow"></div>
+    <div class="tools">
+      <button class="ghost" id="boxes-btn" type="button">Коробки</button>
+      <button class="ghost" id="theme" type="button">Светлая тема</button>
+    </div>
+  </aside>
+  <main class="stage" id="stage"></main>
+</div>
+<div class="kit" id="kit" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
