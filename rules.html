@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Герои III — памятка</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+  :root, [data-theme="light"] {
+    --bg: #f7f4ef;
+    --fg: #1a1614;
+    --muted: #3f3832;
+    --dim: #514840;
+    --line: #b7ad9f;
+    --accent: #8d3d2c;
+    --yes: #146b34;
+    --no: #9d1c1c;
+    --maybe: #7a4e00;
+    --card: #ffffff;
+    --top: #ffffff;
+    --th: #efe6d8;
+    --sticky: #ffffff;
+    --input-line: #6e6458;
+    --nav: #1a1614;
+    --pill-bg: #e4d8c6;
+    --pill-fg: #2c241c;
+    --mode-y-bd: #146b34;
+    --mode-y-bg: #e5f6eb;
+    --mode-n-bd: #9d1c1c;
+    --mode-n-bg: #fde8e8;
+    --mode-q-bd: #7a4e00;
+    --mode-q-bg: #fff3d6;
+    --head: 11rem;
+  }
+  [data-theme="dark"] {
+    --bg: #12110f;
+    --fg: #f3ece3;
+    --muted: #c9bbaa;
+    --dim: #b3a394;
+    --line: #4a4138;
+    --accent: #f0b4a2;
+    --yes: #8ddeaf;
+    --no: #f0a3a3;
+    --maybe: #f0d08a;
+    --card: #1c1a17;
+    --top: #1a1815;
+    --th: #2c2822;
+    --sticky: #1c1a17;
+    --input-line: #7a6c5e;
+    --nav: #f3ece3;
+    --pill-bg: #3a332b;
+    --pill-fg: #f3e6d4;
+    --mode-y-bd: #6fbf90;
+    --mode-y-bg: #17241c;
+    --mode-n-bd: #d08080;
+    --mode-n-bg: #2a1818;
+    --mode-q-bd: #d0aa62;
+    --mode-q-bg: #2a2316;
+    --head: 11rem;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.55 "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--top);
+    border-bottom: 1px solid var(--line);
+    padding: 0.7rem 1rem 0.8rem;
+  }
+  .title-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.55rem; }
+  .title-row h1 { margin: 0; font-size: 1.25rem; font-weight: 650; }
+  .views { display: flex; gap: 0.35rem; margin: 0 0 0.65rem; }
+  .views button.on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .filters { display: flex; flex-wrap: wrap; gap: 0.55rem 0.8rem; align-items: end; }
+  label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.78rem; color: var(--muted); }
+  input, select, button {
+    background: var(--card);
+    color: var(--fg);
+    border: 1px solid var(--input-line);
+    border-radius: 8px;
+    font: inherit;
+    padding: 0.35rem 0.5rem;
+  }
+  input, select { min-width: 12rem; }
+  button { cursor: pointer; }
+  button:hover, input:hover, select:hover { border-color: var(--accent); }
+  .count { color: var(--muted); font-size: 0.85rem; padding-bottom: 0.35rem; }
+  .layout { display: grid; grid-template-columns: 16rem 1fr; gap: 0; }
+  nav.side {
+    position: sticky;
+    top: var(--head);
+    align-self: start;
+    max-height: calc(100vh - var(--head));
+    overflow: auto;
+    border-right: 1px solid var(--line);
+    padding: 0.8rem 0.7rem 2rem;
+  }
+  nav.side a { display: block; color: var(--nav); text-decoration: none; padding: 0.12rem 0; font-size: 0.86rem; }
+  nav.side a:hover, nav.side a.on { color: var(--accent); }
+  nav.side .sec { margin: 0.8rem 0 0.25rem; color: var(--dim); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  main { padding: 1rem 1.1rem 3rem; min-width: 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.8rem 1.2rem; color: var(--muted); margin: 0 0 0.8rem; }
+  .legend b { font-weight: 600; }
+  .yes { color: var(--yes); }
+  .no { color: var(--no); }
+  .maybe { color: var(--maybe); }
+  .note { color: var(--muted); max-width: 70rem; }
+  .lead { max-width: 68rem; margin: 0 0 1rem; }
+  .lead h2 { margin: 0.15rem 0 0.25rem; font-size: 1.05rem; }
+  .lead p, .lead li { margin: 0.15rem 0; }
+  .lead ul { margin: 0.15rem 0 0.35rem; padding-left: 1.15rem; }
+  .wrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--card); max-height: 70vh; }
+  table { border-collapse: separate; border-spacing: 0; min-width: 100%; }
+  table.decks td:nth-child(2) { min-width: 22rem; }
+  th, td { border-bottom: 1px solid var(--line); padding: 0.35rem 0.45rem; vertical-align: middle; }
+  th { position: sticky; top: 0; background: var(--th); text-align: center; font-weight: 650; font-size: 0.82rem; z-index: 2; }
+  th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    text-align: left;
+    background: var(--sticky);
+    min-width: 16rem;
+    z-index: 1;
+  }
+  th:first-child { z-index: 3; background: var(--th); }
+  .pills { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.28rem; }
+  .pill {
+    display: inline-block;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: var(--pill-bg);
+    color: var(--pill-fg);
+    border: 1px solid var(--line);
+    font-size: 0.72rem;
+    font-weight: 650;
+  }
+  .mech-name { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+  #decks { margin: 0 0 1.4rem; }
+  #decks h2 { margin: 0 0 0.35rem; font-size: 1.2rem; }
+  td.mark { text-align: center; width: 6.2rem; white-space: nowrap; font-weight: 650; font-size: 1.05rem; }
+  td.mark a.diff { margin-left: 0.3rem; text-decoration: none; font-weight: 700; }
+  td.mark a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.4rem;
+    min-height: 1.8rem;
+    font-weight: 650;
+    text-decoration: none;
+    font-size: 1.05rem;
+  }
+  article { scroll-margin-top: calc(var(--head) + 8px); border-top: 1px solid var(--line); padding: 1rem 0 0.4rem; }
+  article h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+  .base { margin: 0 0 0.7rem; max-width: 68ch; }
+  .modes { display: grid; gap: 0.45rem; }
+  .mode {
+    scroll-margin-top: calc(var(--head) + 8px);
+    border-left: 3px solid var(--line);
+    padding: 0.35rem 0.7rem 0.45rem;
+    max-width: 72ch;
+  }
+  .mode.y { border-color: var(--mode-y-bd); background: var(--mode-y-bg); }
+  .mode.n { border-color: var(--mode-n-bd); background: var(--mode-n-bg); }
+  .mode.q { border-color: var(--mode-q-bd); background: var(--mode-q-bg); }
+  #grid, #decks, #modes-intro { scroll-margin-top: calc(var(--head) + 8px); }
+  .modes-intro { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 0.55rem; margin: 0 0 1rem; }
+  .mode-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem 0.7rem; }
+  .mode-card h2 { margin: 0 0 0.2rem; font-size: 0.98rem; }
+  .mode-card p { margin: 0; color: var(--fg); }
+  body[data-view="deck"] .only-mech, body[data-view="deck"] #mech-view { display: none; }
+  body[data-view="mech"] #deck-view { display: none; }
+  .mode h3 { margin: 0; font-size: 0.95rem; }
+  .mode p { margin: 0.2rem 0 0; }
+  .src { font-size: 0.85rem; }
+  h2.block { margin: 1.4rem 0 0.2rem; font-size: 1.05rem; }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.side { display: none; }
+    th:first-child, td:first-child { min-width: 11rem; }
+  }
+</style>
+</head>
+<body data-theme="light" data-view="mech">
+<header class="top">
+  <div class="title-row">
+    <h1>Герои III</h1>
+    <nav class="app">
+      <a href="index.html">Старт</a>
+      <a class="on" href="rules.html">Памятка</a>
+      <a href="missions.html">Миссии</a>
+      <a href="locations.html">Локации</a>
+    </nav>
+    <button id="theme" type="button">Тёмная тема</button>
+  </div>
+  <div class="views">
+    <button id="view-mech" class="on" type="button">Механики</button>
+    <button id="view-deck" type="button">Колоды карт</button>
+  </div>
+  <div class="filters">
+    <label>Режим
+      <select id="mode"></select>
+    </label>
+    <label class="only-mech">Механика
+      <select id="mech"></select>
+    </label>
+    <label>Поиск
+      <input id="q" type="search" placeholder="Название механики">
+    </label>
+    <button id="reset" type="button">Сбросить</button>
+    <button id="jump" type="button">К сетке</button>
+    <span class="count" id="count"></span>
+  </div>
+</header>
+<div class="layout">
+  <nav class="side" id="side" aria-label="Механики"></nav>
+  <main>
+    <section class="lead" id="how">
+      <h2>Что это</h2>
+      <p>Шпаргалка по настольной игре «Герои Меча и Магии III» издательства Archon Studio. Это не компьютерная игра. Текст сверен со сводом правил 2.0.1 от 19 сентября 2026. Пилюля под названием — коробка, где искать карты или жетоны.</p>
+      <h2>Как пользоваться</h2>
+      <ul>
+        <li>«Механики» и «Колоды карт» переключают раздел. Слева меню только открытого раздела.</li>
+        <li>«Режим» оставляет один столбец. «Механика» и поиск сужают список.</li>
+        <li>✓ механика есть, ✗ её нет, ✓? по желанию или только если её даёт сценарий. Это всё, что сетка говорит о наличии.</li>
+        <li>Знак ≠ рядом с отметкой: в этом режиме правило работает иначе. Клик открывает это отличие. Без ≠ правило стандартное, описание одно для всех режимов.</li>
+        <li>Название механики в сетке открывает её описание ниже. Строка «Свод, стр.» открывает PDF в новой вкладке.</li>
+        <li>«Тёмная тема» меняет оформление и запоминается в этом браузере.</li>
+        <li>На Mac откройте файл в Chrome, Firefox или Safari. В Safari PDF иногда открывается с первой страницы: номер написан в ссылке «Свод, стр.».</li>
+      </ul>
+      <p>PDF лежит в этой же папке. Отправляйте другу всю папку, не один HTML. Начинайте с index.html: там коротко, куда смотреть. Версия 1.</p>
+    </section>
+    <div id="mech-view">
+      <p class="legend">
+        <span><b class="yes">✓</b> есть</span>
+        <span><b class="no">✗</b> нет</span>
+        <span><b class="maybe">✓?</b> по желанию или если даёт сценарий</span>
+        <span><b>≠</b> в этом режиме правило другое</span>
+      </p>
+      <section id="modes-intro"></section>
+      <section id="grid"></section>
+      <section id="details"></section>
+    </div>
+    <div id="deck-view">
+      <section id="decks"></section>
+    </div>
+  </main>
+</div>
+<script id="data" type="application/json">{"modes": [["clash", "Столкновение", "Игроки соревнуются. Нейтралов ведёт сидящий справа. На троих и больше кубик фракции от каждого соперника может сразу дать победу."], ["camp", "Кампания", "Один игрок и цепочка сценариев против героя ИИ. Свои стартовые бонусы. После сценария уровень снова I, часть колоды переносится."], ["ally", "Альянс", "Команда против команды. Союзники меняют ресурсы и карты. Команды ходят по очереди."], ["coop", "Кооператив", "Общая цель. Нейтралов ведёт ИИ, героя ИИ с колодой нет. Ресурсы и карты союзники могут отдавать друг другу."], ["tour", "Турнир", "Двое игроков. Карту с начала строят сами и считают очки. Есть муллиган и повтор поиска за жетон морали."], ["adv", "Приключение", "Карты нет. Сначала колода приключений и город, потом бой на большом поле. Карты морали обязательны."], ["skir", "Стычка", "Сразу бой на большом поле. Колоду и армию задаёт длина партии. Карты морали обязательны."]], "sections": [["scenario", "Сценарий и победа"], ["prep", "Подготовка"], ["round", "Раунд"], ["turn", "Ход"], ["hero", "Город и герой"], ["deck", "Колоды героя"], ["morale", "Мораль"], ["units", "Отряды и нейтралы"], ["combat", "Сражение"], ["ai", "ИИ"], ["map", "Карта и торговля"], ["tokens", "Жетоны локации"], ["sea", "Море"], ["elem", "Стихии и призыв"], ["fx", "Жетоны эффектов"], ["field", "Большое поле"], ["variants", "Варианты правил"], ["addrules", "Дополнительные правила"]], "mechs": [{"section": "scenario", "name": "Приоритет правил", "page": 5, "base": "Если тексты спорят, выше карта, которая уже в игре, затем карта отряда, доска города (Town), книга миссий и только потом эта книга.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m01"}, {"section": "scenario", "name": "Сценарий из книги миссий", "page": 10, "base": "Карта, старт и условие победы берутся из книги миссий.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m02"}, {"section": "scenario", "name": "Четыре уровня сложности и стартовый бонус", "page": 10, "base": "Лёгкий, нормальный, тяжёлый, невозможный. Бонус — ресурсы или поиск в артефактах. Сложность задаёт и нейтралов.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"camp": {"text": "Таблица бонусов заменена бонусами кампании. Сложность по-прежнему задаёт нейтралов: бонус убран, шкала сложности нет.", "page": 53}}, "id": "m03"}, {"section": "scenario", "name": "Победа по тексту сценария", "page": 11, "base": "Своё условие из книги миссий. Партия кончается в конце текущего раунда, если не сказано иначе.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"tour": {"text": "Условие сценария тоже заканчивает партию. После этого оба считают очки.", "page": 55}}, "id": "m04"}, {"section": "scenario", "name": "Победа кубиком фракции от каждого соперника", "page": 11, "base": "В столкновении на троих и больше кубик фракции от каждого соперника сразу даёт победу.", "marks": {"clash": "q", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m05"}, {"section": "scenario", "name": "Победа по очкам", "page": 55, "base": "Когда кончились раунды или выполнено условие сценария, побеждает тот, у кого больше очков.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m06"}, {"section": "scenario", "name": "Победа: не осталось отрядов врага", "page": 56, "base": "Партия выиграна, когда в финальном бою повержены все отряды врага.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m07"}, {"section": "scenario", "name": "Выбывание без города", "page": 11, "base": "Три полных раунда без города (Town) и посёлка (Settlement), либо поражение главного героя, когда городов уже нет. Выбывший может вести нейтралов.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m08"}, {"section": "prep", "name": "Подготовка шагами 1–23", "page": 12, "base": "Сценарий, фракция, герой, город (Town), колода Силы и Магии, общие колоды, нейтралы, трекер раунда.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m09"}, {"section": "prep", "name": "Подготовка Приключения и Стычки", "page": 57, "base": "Большое поле, герой, колоды навыков, артефактов и заклинаний. Дипломатия и Логистика убраны. Карты морали с символом Battlefield остаются.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m10"}, {"section": "prep", "name": "Таблица нейтралов на обороте", "page": 11, "base": "Сложность поля задаёт число и уровень нейтралов.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m11"}, {"section": "round", "name": "Порядок ходов не меняется", "page": 13, "base": "Порядок, выбранный в начале, до конца партии не перетасовывается.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"camp": {"text": "Игрок ходит, затем герой ИИ, если сценарий его вывел.", "page": 49}, "ally": {"text": "Команды ходят по очереди. В начале хода команды на раунд решают порядок союзников.", "page": 16}, "adv": {"text": "Кто начинает раунд, чередуется: нечётный — владелец жетона инициативы, чётный — другой.", "page": 58}, "skir": {"text": "Первого выбирают двумя кубиками. Дальше раундов карты нет, жетон инициативы живёт в бою.", "page": 57}}, "id": "m12"}, {"section": "round", "name": "Команды ходят по очереди", "page": 16, "base": "В начале первого хода команды на раунд выбирают, кто из союзников ходит раньше.", "marks": {"clash": "n", "camp": "n", "ally": "y", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m13"}, {"section": "round", "name": "Стартовый игрок чередуется", "page": 58, "base": "Нечётный раунд начинает владелец жетона инициативы, чётный — второй игрок.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "n"}, "exp": "Поле боя", "modes": {}, "id": "m14"}, {"section": "round", "name": "Герой ИИ ходит после игрока", "page": 49, "base": "Если не сказано иначе: 3 очка хода, после игрока.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m15"}, {"section": "round", "name": "Раунд карты: жетоны, доход, астрологи", "page": 15, "base": "Кроме первого раунда поднимают жетоны города (Town) и очки хода и сбрасывают эксперта. Нечётный раунд — доход, чётный — карта астрологов.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m16"}, {"section": "round", "name": "Раунд Приключения без астрологов", "page": 58, "base": "В ресурсный раунд доход как обычно. В раунд астрологов карту не берут: доход одного ресурса растёт на шаг.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "n"}, "exp": "Поле боя", "modes": {}, "id": "m17"}, {"section": "round", "name": "События Крепости", "page": 15, "base": "По желанию, если игроков двое и больше. В начале ресурсного раунда после дохода одна карта. Первую тянет первый игрок, дальше по кругу.", "marks": {"clash": "q", "camp": "n", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "n"}, "exp": "Крепость", "modes": {}, "id": "m18"}, {"section": "turn", "name": "Добор руки до лимита уровня", "page": 17, "base": "В начале хода сбросить любое число, лишнее сверх лимита сбросить обязательно, добрать до лимита. Лимит: 4, 5, 6, 7.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"adv": {"text": "До финала колода закрыта, каждый ход до лимита не добирают. В начале финала колоду тасуют и набирают до лимита.", "page": 58}, "skir": {"text": "Один раз перед боем. Раундов карты, в которых добор повторяется, нет.", "page": 60}}, "id": "m19"}, {"section": "turn", "name": "Муллиган первого раунда", "page": 55, "base": "После обычного добора один раз можно вмешаться руку и сброс в колоду и набрать заново.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m20"}, {"section": "turn", "name": "Очки хода по карте", "page": 17, "base": "За очко: шаг, повтор поля, лишний раунд против нейтралов, открытие фрагмента или выкладка дальнего. Только в свой ход.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"ally": {"text": "Союзники проходят сквозь поле друг друга и не останавливаются на нём. Такое поле не посещается.", "page": 17}}, "id": "m21"}, {"section": "hero", "name": "Город: строительство и найм", "page": 18, "base": "Каждый жетон города (Town) тратят раз в раунд, в ход любого игрока, но не во время боя. После заявки боя жетоны ещё можно потратить до расстановки. За раунд одно здание. Жилища (Dwelling) строят по порядку уровней. Двустороннюю карточку здания улучшают последовательно. Популяция — найм и усиление сколько угодно отрядов за этот раз, либо вторичный герой. Книга заклинаний требует гильдию магов (Mage Guild) и не работает в раунд её постройки.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}, "exp": "База", "modes": {"adv": {"text": "Город есть. Старт без зданий и без отрядов, доход 10 золота. Действия города те же.", "page": 57}}, "id": "m22"}, {"section": "hero", "name": "Вторичный герой", "page": 20, "base": "10 золота и жетон популяции, 2 очка хода, без доски, без опыта и без колоды. Атакованный может сразу проиграть, чтобы сохранить отряды.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m23"}, {"section": "hero", "name": "Опыт и уровни главного героя", "page": 21, "base": "Каждые 2 опыта — уровень, после VII опыт ничего не даёт. II, III, V, VII — поиск навыка. Золотые уровни — специальность.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"camp": {"text": "После сценария уровень снова I, колода собирается заново: все характеристики, специальность I и ещё 5 карт.", "page": 53}, "adv": {"text": "Повышение то же, но боевая карта кладётся в закрытую колоду до финала.", "page": 59}, "skir": {"text": "Уровень не зарабатывают: короткая партия — III, средняя — V, длинная — VII.", "page": 60}}, "id": "m24"}, {"section": "hero", "name": "Между сценариями уровень снова I", "page": 53, "base": "После сценария кампании уровень сбрасывают и собирают стартовую колоду следующего сценария. Проигрыш возвращает записанную колоду. Свиток в следующий сценарий не переносится.", "marks": {"clash": "n", "camp": "y", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m25"}, {"section": "hero", "name": "Эксперт сбрасывается в начале раунда карты", "page": 15, "base": "Счётчик эксперта обнуляется в начале раунда карты, кроме первого, вместе с жетонами города (Town). Между раундами одного боя на обычном поле эксперт не возвращается.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m26"}, {"section": "hero", "name": "В конце раунда большого поля: 1 эксперт и 2 карты", "page": 62, "base": "В конце каждого раунда боя возвращают один эксперт, не выше предела героя, и берут 2 карты.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {"adv": {"text": "На фазе приключений лимит эксперта общий на всю фазу. В начале финала все использованные эксперты возвращаются, дальше эта строка.", "page": 59}}, "id": "m27"}, {"section": "hero", "name": "Ресурсы", "page": 29, "base": "Золото, стройматериалы и драгоценности. Доход двигают кубиком на трекере города (Town). Запасу нет предела. Кубик ресурсов: 2 или 4 стройматериала, 1 или 2 драгоценности, 3 или 6 золота.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}, "exp": "База", "modes": {}, "id": "m28"}, {"section": "deck", "name": "Колода Силы и Магии", "page": 22, "base": "Личная колода главного героя. Пустую собирают из своего сброса. Карты играют в свой ход или в бою главного.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"adv": {"text": "До финала колода закрыта. Боевая карта уходит в неё. Карта на ресурсы или скидку лежит у доски, играется один раз и уходит из игры.", "page": 59}}, "id": "m29"}, {"section": "deck", "name": "Колода закрыта до финального боя", "page": 59, "base": "Во время приключений колода недоступна. Её тасуют и набирают в руку только к финалу.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "n"}, "exp": "Поле боя", "modes": {}, "id": "m30"}, {"section": "deck", "name": "Поиск", "page": 22, "base": "Из навыков, артефактов или заклинаний берут одну из X верхних, остальные в сброс, либо верхнюю карту сброса.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"tour": {"text": "Во время любого поиска жетон положительной морали сбрасывает вытянутые карты и позволяет искать ещё раз.", "page": 55}}, "id": "m31"}, {"section": "deck", "name": "Общие колоды навыков, артефактов и заклинаний", "page": 22, "base": "У каждой свой сброс. Колода кончилась — тасуют сброс и верхнюю кладут в новый сброс.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "modes": {"adv": {"text": "Из навыков убраны Дипломатия и Логистика.", "page": 57}, "skir": {"text": "Из навыков убраны Дипломатия и Логистика.", "page": 57}}, "id": "m32"}, {"section": "deck", "name": "Одно заклинание за раунд боя", "page": 26, "base": "Один основной эффект заклинания за раунд боя. Специальность в лимит не входит. Знания лимит повышают. Свиток в лимит не входит.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m33"}, {"section": "deck", "name": "Специальности героя", "page": 21, "base": "Три карты героя. В руку по золотым уровням. Это не заклинание и не школа.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"skir": {"text": "Короткая партия даёт I, средняя — I и IV, длинная — все три.", "page": 60}}, "id": "m34"}, {"section": "deck", "name": "Артефакты", "page": 27, "base": "Малый, великий и реликвия лежат в одной колоде.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "modes": {"ally": {"text": "Артефакты из руки меняют поровну, если герои на соседних полях.", "page": 52}, "coop": {"text": "Артефакты из руки меняют поровну, если герои на соседних полях.", "page": 52}, "tour": {"text": "Дипломатия из навыков и Песочные часы недоброго часа убраны. Удалённый артефакт лежит у колоды до конца и даёт очки.", "page": 54}}, "id": "m35"}, {"section": "deck", "name": "Обмен артефактами и заклинаниями", "page": 52, "base": "Союзники меняют карты из руки поровну, герои стоят на соседних полях.", "marks": {"clash": "n", "camp": "n", "ally": "y", "coop": "y", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m36"}, {"section": "deck", "name": "Удалённый артефакт копится в очки", "page": 55, "base": "Удалённый артефакт лежит у колоды до конца партии и даёт победные очки.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m37"}, {"section": "deck", "name": "Свитки заклинаний", "page": 28, "base": "Два заклинания на свитке, не в руке и не в лимите. Только слабый эффект. Третий свиток заменяет один из двух или сбрасывается.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "q", "skir": "n"}, "exp": "Цитадель", "modes": {}, "id": "m38"}, {"section": "deck", "name": "Боевые машины", "page": 28, "base": "Постоянная карта. Покупка на рынке (Trading Post) занимает визит целиком.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}, "exp": ["Оплот", "Причал", "Набор целей"], "modes": {"adv": {"text": "Постоянные карты, включая машины, только в финальном бою.", "page": 56}}, "id": "m39"}, {"section": "deck", "name": "Усиленная характеристика", "page": 24, "base": "Карта Инферно с экспертным эффектом без траты эксперта. Звёздная ось (Star Axis) снимает одну характеристику из руки и даёт усиленную того же типа.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Инферно", "modes": {}, "id": "m40"}, {"section": "deck", "name": "Жетон усиленного навыка", "page": 25, "base": "Жетон тратится в момент получения нового навыка. Карту, которая уже в колоде, руке или сбросе, он не меняет.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Морские сражения", "modes": {}, "id": "m41"}, {"section": "deck", "name": "Типы эффектов карт", "page": 22, "base": "Мгновенный срабатывает сразу, но не между броском кубика атаки и уроном: тогда можно только перебросить этот кубик. Активация — только во время активации своего отряда в бою. Глобус нельзя в бою. Продолжительный длится, пока его не используют или не начнётся следующий ход применившего. Постоянный лежит, пока его не сбросят или не заменят.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m42"}, {"section": "deck", "name": "Постоянная карта", "page": 22, "base": "Активна одна. Новая заменяет прежнюю. У лежащей карты берут либо базовый эффект, либо экспертный, не оба. Боевая машина занимает этот же слот.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"adv": {"text": "До финала постоянные карты на ресурсы дают только нижний эффект. Школы магии и боевые машины — только в финальном бою.", "page": 56}}, "id": "m43"}, {"section": "deck", "name": "Оплата заклинания", "page": 26, "base": "Верхний эффект обычно без доплаты. Более сильный платят другими картами в этот же каст, чаще картой силы магии. Запас силы не копится. Можно выбрать эффект дешевле, чем оплатили. У каждой карты есть и запасной эффект +1.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m44"}, {"section": "deck", "name": "Школы магии", "page": 26, "base": "Воздух, огонь, земля, вода. Один символ школы — базовое заклинание, четыре одинаковых — экспертное. Волшебная стрела при каждом розыгрыше сама выбирает школу.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m45"}, {"section": "deck", "name": "Карты некромантии", "page": 24, "base": "Применять их может Некрополис. Другая фракция, вытянув такую карту из колоды навыков, может сбросить её и взять новую или оставить в руке. Сыграть чужую карту некромантии можно только одним способом: положить в свой сброс.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m46"}, {"section": "morale", "name": "Мораль: повтор поиска за жетон", "page": 55, "base": "Жетон положительной морали во время поиска сбрасывает вытянутые карты и даёт искать снова.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "y", "adv": "n", "skir": "n"}, "exp": "Турнир", "modes": {}, "id": "m47"}, {"section": "morale", "name": "Мораль: жетоны", "page": 19, "base": "Один положительный. Второй берут, только потратив первый. Второй отрицательный не берётся: в конце этого хода сбрасывают руку. Некрополис мораль игнорирует. Жетоны или карты морали — одно из двух, не вместе.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m48"}, {"section": "morale", "name": "Мораль: карты", "page": 19, "base": "Карты вместо жетонов, не вместе с ними. Две стопки: плюс и минус. Карты со значком Battlefield убирают. Получили мораль — сбросьте карту минуса, если она есть, иначе возьмите 1 верхнюю карту плюса. Больше двух карт плюса не держат, третью не берут. Потеряли мораль — сбросьте карту плюса, иначе 1 карта минуса, без поиска. Сыгранную карту кладут вниз своей стопки. Пустую стопку собирают из её сброса, жетоном не заменяют.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {"adv": {"text": "Колоды обязательны, карты со значком Battlefield остаются. Карту плюса ищут (2), лишнюю кладут вниз стопки.", "page": 19}, "skir": {"text": "Колоды обязательны, карты со значком Battlefield остаются. Карту плюса ищут (2), лишнюю кладут вниз стопки.", "page": 19}}, "id": "m49"}, {"section": "units", "name": "Найм нейтралов", "page": 38, "base": "Нейтрала нанимают эффектом сценария или Дипломатией. Её базовый эффект берёт верх колоды нужного уровня и требует жилище (Dwelling) этого уровня. На портал призыва Подземелья он не действует. Погибший нейтрал возвращается в сброс своей колоды.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m50"}, {"section": "units", "name": "Найм и усиление отрядов", "page": 36, "base": "Найм из жилища (Dwelling) нужного уровня. Усиление ещё требует цитадель (Citadel). Нейтрала усилить нельзя. Все отряды погибли — снова стартовый набор сценария.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}, "exp": "База", "modes": {}, "id": "m51"}, {"section": "units", "name": "В бой не больше 5 отрядов", "page": 36, "base": "На обычном поле в бой берётся не больше пяти отрядов. Большое поле меняет это число, см. «Большое поле».", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m52"}, {"section": "units", "name": "На поле ставят все свои отряды", "page": 61, "base": "В Приключении и Стычке лимита пять нет.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m53"}, {"section": "units", "name": "Защита не снижает урон заклинания", "page": 37, "base": "Защита снимает урон атаки. Урон заклинания она не снижает. Жетон защиты бросает лишний кубик, когда отряд атакован.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m54"}, {"section": "units", "name": "Ход отряда на обычном поле", "page": 38, "base": "Наземный и летающий: до 3 шагов и атака соседнего. Стрелок атакует кого угодно и может шагнуть, либо только шагает.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m55"}, {"section": "units", "name": "Штраф стрелка", "page": 38, "base": "Сосед — клетка по стороне, не по диагонали. Если враг рядом, стрелок обязан бить его. За соседнюю цель и за выстрел с задней линии в заднюю бросают два кубика атаки и берут меньший. Стены и ворота тоже могут снизить выстрел. На большом поле штраф — за соседнюю цель или за цель на 8 и дальше клетках.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"adv": {"text": "На большом поле штраф — два кубика атаки, берут меньший. Он срабатывает по соседней цели или по цели на 8 и дальше клетках.", "page": 62}, "skir": {"text": "На большом поле штраф — два кубика атаки, берут меньший. Он срабатывает по соседней цели или по цели на 8 и дальше клетках.", "page": 62}}, "id": "m56"}, {"section": "units", "name": "Ход на большом поле", "page": 62, "base": "Дальность хода равна скорости. Стрелок за активацию либо ходит, либо атакует. Штраф — соседняя цель или цель на 8 и дальше клетках.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m57"}, {"section": "units", "name": "Нейтралы карты и быстрый бой", "page": 40, "base": "Поле с римской цифрой: бой до посещения. Сложность ниже уровня героя — боя нет и награды до посещения нет.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m58"}, {"section": "units", "name": "Нейтралов ведёт игрок справа", "page": 41, "base": "Игрок справа расставляет нейтралов и ведёт их. Стрелки в тыл, если место есть. Чужие нейтралы по возможности всегда атакуют и не могут защищаться.", "marks": {"clash": "y", "camp": "n", "ally": "y", "coop": "n", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m59"}, {"section": "units", "name": "Нейтралов ведёт ИИ", "page": 48, "base": "Расстановка слева направо, по скорости. В бою цели выбирает приоритет ИИ. Защищаться нельзя, если не сказано иначе.", "marks": {"clash": "n", "camp": "y", "ally": "n", "coop": "y", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m60"}, {"section": "units", "name": "Перетягивание при миниатюрах", "page": 69, "base": "Правило со стр. 69, когда на столе вообще есть миниатюры. Свод прямо называет миниатюры обоих наборов целей. Если миниатюры отрядов лежат в коробке фракции, правило то же: смотрите состав этой коробки. В бою с нейтралами две одинаковые карты, отряд уже вашей армии или отряд вашей фракции сбрасывают и берут другую. При найме нельзя брать фракцию другого игрока и отряд, который уже есть у кого-то из игроков.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": ["Набор целей", "Набор целей 2", "Коробка фракции, если в ней есть миниатюры"], "modes": {}, "id": "m61"}, {"section": "units", "name": "Стороны отряда", "page": 37, "base": "У карты две стороны: «несколько» и «много». Урон, которого хватает на «много», переворачивает карту на «несколько», остаток ложится уже туда. После боя выжившие лечат все очки здоровья. Сторона между боями сохраняется.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {"skir": {"text": "Сторону на старте задаёт длина: короткая — все «несколько», дальше таблица длины поднимает часть отрядов на «много».", "page": 60}}, "id": "m62"}, {"section": "combat", "name": "Бой с поля карты", "page": 40, "base": "Бой начинается на нейтральном поле, на чужом герое или в чужом городе (Town). За ход боёв может быть несколько.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m63"}, {"section": "combat", "name": "Бой карты приключений на кубиках", "page": 59, "base": "Называют мощь врага, бросают кубик за два своих отряда. Не добрали мощь — награда меньше и жетон паралича.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "n"}, "exp": "Поле боя", "modes": {}, "id": "m64"}, {"section": "combat", "name": "Сразу финальный бой", "page": 60, "base": "Фазы приключений нет. Колоду собирают по длине партии и сразу выходят на большое поле.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m65"}, {"section": "combat", "name": "Лимит раунда против нейтралов и отступление", "page": 43, "base": "Против обычных нейтралов один раунд, дальше отступление или очко хода. Против игрока, лазури и героя ИИ лимита нет и отступить нельзя.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m66"}, {"section": "combat", "name": "Кубик атаки", "page": 42, "base": "После карт на атаку бросают красный кубик от −1 до +1 и прибавляют его к атаке, затем вычитают защиту. Между броском и уроном мгновенную карту играть нельзя. Переброс этого кубика — исключение.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m67"}, {"section": "combat", "name": "Препятствия на доске", "page": 42, "base": "Любая карта на доске боя — препятствие. Нелетающий сквозь неё не проходит, летающий игнорирует.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m68"}, {"section": "combat", "name": "Куда уходит герой после боя", "page": 44, "base": "Отступление с нейтралов возвращает героя на последнее посещённое поле, без его посещения. Проигравший главный герой идёт в дружественный город (Town) или посёлок (Settlement). Если его побила армия другого игрока, он получает 1 отрицательную мораль, платит победителю 5 золота и отдаёт кубик фракции. Проигравший вторичный герой сходит с карты и тоже отдаёт кубик фракции, если проиграл игроку.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "y"}, "exp": "База", "modes": {"camp": {"text": "Карта есть, герой уходит по этим правилам. Другого игрока нет: отрицательная мораль, 5 золота и кубик фракции за поражение не срабатывают.", "page": 44}, "coop": {"text": "Карта есть, герой уходит по этим правилам. Чужой армии игрока нет, поэтому мораль, 5 золота и кубик фракции за поражение не отдают.", "page": 44}, "skir": {"text": "Города и поля карты нет, возвращать героя некуда. Если армию побил другой игрок, 1 отрицательная мораль, 5 золота и кубик фракции остаются.", "page": 44}}, "id": "m69"}, {"section": "combat", "name": "Сдача игроку за 10 золота", "page": 44, "base": "Вместо активации платят 10 золота. Никто не победитель, опыт и кубик фракции не отдают. Своему городу (Town) сдаться нельзя.", "marks": {"clash": "y", "camp": "n", "ally": "y", "coop": "n", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m70"}, {"section": "combat", "name": "Осада города", "page": 46, "base": "Без цитадели (Citadel) — обычная доска. С цитаделью — стены, ворота и башня. Ворота для защитника не препятствие. Героя нет на поле: за 8 золота только отряды, без колоды.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "q", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m71"}, {"section": "combat", "name": "Осада по правилам ИИ", "page": 48, "base": "Ворота перед самым быстрым стрелком, если сценарий не сказал иначе. Стены не бьют, пока можно перелететь или пройти. Башня для ИИ как серебряный отряд.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m72"}, {"section": "combat", "name": "Опыт за бой", "page": 44, "base": "Равная сложность поля или равный уровень вражеского главного — 1 опыт, выше — 2. Лазурь сразу до VII. Сдача опыта не даёт.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}, "exp": "База", "modes": {"camp": {"text": "За нейтралов опыт есть. За героя ИИ награды нет, пока сценарий её не назвал. Это отмена награды, не правка таблицы.", "page": 49}, "adv": {"text": "Уровень растёт от карт приключений. Таблица «сложность поля против уровня» не используется.", "page": 59}}, "id": "m73"}, {"section": "combat", "name": "Победа над героем ИИ без награды", "page": 49, "base": "Победа над героем ИИ не даёт наград, пока сценарий сам не назвал награду.", "marks": {"clash": "n", "camp": "y", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m74"}, {"section": "combat", "name": "Контрудар", "page": 42, "base": "Смежный отряд, переживший атаку, бьёт в ответ. За раунд один контрудар, его отмечают чёрным кубиком. Контрудар сам ответный контрудар не вызывает.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m75"}, {"section": "combat", "name": "Паралич", "page": 42, "base": "Жетон на отряде: его активацию пропускают и жетон снимают. Если парализованного атаковали или он получил любой урон, жетон снимают сразу. Контрудар жетон не запрещает.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}, "exp": "База", "modes": {}, "id": "m76"}, {"section": "ai", "name": "Герой ИИ и две колоды", "page": 50, "base": "Колода ИИ из карт силы, магии и умения, число пишет сценарий. Заклинания — вторая колода. Перед каждым боем сброс вмешивают обратно.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m77"}, {"section": "ai", "name": "Колода ИИ останавливается в бою", "page": 50, "base": "Если колода ИИ кончилась в этом бою, до конца боя её не берут. Перед следующим боем сброс вмешивают обратно.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m78"}, {"section": "ai", "name": "Сложные заклинания ИИ", "page": 51, "base": "Несколько героев ИИ без своих колод делят одну колоду ИИ. Сценарий может менять приоритеты. Несколько целей: соседняя группа высшего уровня, при равенстве более раненая; нет соседства — цели не рядом со своими; иначе карту магии ИИ кладут вниз колоды ИИ, а заклинание замешивают обратно. Каменная кожа кладёт жетон защиты на отряд с самой высокой защитой. Лечение снимает урон с самого раненого, сперва высокого уровня. Усиление до конца раунда откладывают, если больше половины отрядов этого уровня и выше уже ходили: применят на первой активации следующего раунда и новую карту ИИ тогда не берут. Слабость кладут только на отряд, который даст контрудар.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m79"}, {"section": "ai", "name": "Колода заклинаний ИИ", "page": 50, "base": "Отдельная стопка. Карта магии берёт следующее заклинание. Если колода кончилась до конца боя, сброс тасуют сразу.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m80"}, {"section": "ai", "name": "Навык сценария у ИИ не сбрасывается", "page": 50, "base": "Карта умения сбрасывается. Навык, который нашёл сценарий, лежит рядом и используется снова.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m81"}, {"section": "ai", "name": "Ход героя ИИ по карте", "page": 49, "base": "3 очка хода. Сначала герой игрока на том же фрагменте, потом шахта (Mine) или посёлок (Settlement), потом город (Town) игрока. Нейтралов на пути снимает без боя и без награды поля.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m82"}, {"section": "ai", "name": "Приоритет целей ИИ", "page": 48, "base": "Свой уровень, затем ниже, затем выше. Стрелок сначала стрелков. Равные цели — ближайшая. Защищаться нельзя, если не сказано иначе.", "marks": {"clash": "n", "camp": "y", "ally": "n", "coop": "y", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m83"}, {"section": "map", "name": "Фрагменты карты", "page": 31, "base": "Четыре типа, лицом вниз, пока не открыты. Новый фрагмент граничит минимум с двумя и не запирает проход.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"tour": {"text": "Фрагменты есть, но с начала лежат лицом вверх. Игроки кладут центр, ближние, стартовые и дальние по очереди.", "page": 54}}, "id": "m84"}, {"section": "map", "name": "Карту строят игроки лицом вверх", "page": 54, "base": "Шаблон сценария показывает центр. Остальное кладут игроки по очереди, лицом вверх.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m85"}, {"section": "map", "name": "Поля: одноразовое, захват, многоразовое", "page": 32, "base": "Одноразовое закрывают чёрным кубиком. Захват отмечают кубиком фракции. Многоразовое можно посещать снова за очко хода, стоя на нём.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"ally": {"text": "Союзник считает чужое захваченное поле пустым.", "page": 32}, "coop": {"text": "Союзник считает чужое захваченное поле пустым.", "page": 32}, "tour": {"text": "Обсерватория красного дерева берёт альтернативный эффект.", "page": 55}}, "id": "m86"}, {"section": "map", "name": "Поиск и платное поле можно не брать", "page": 73, "base": "Поиск заклинаний или артефактов и поле, где за эффект платят ресурсы, можно не использовать. Одноразовое всё равно закрывают чёрным кубиком.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m87"}, {"section": "map", "name": "Рынок", "page": 52, "base": "Таблица обмена на обороте книги. С руки снимают одну карту за 1 золото. Нельзя сдать специальность, характеристику, стартовый навык и Волшебную стрелу.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m88"}, {"section": "map", "name": "Союзники меняют ресурсы", "page": 52, "base": "Союзники передают ресурсы друг другу.", "marks": {"clash": "n", "camp": "n", "ally": "y", "coop": "y", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {"ally": {"text": "В любой момент своих ходов, кроме боя.", "page": 52}, "coop": {"text": "Без лимита за то же посещение рынка (Trading Post). Заклинания и артефакты при этом меняют отдельно, на соседних полях.", "page": 52}}, "id": "m89"}, {"section": "map", "name": "Шахты", "page": 76, "base": "Шахта (Mine) с флагом повышает доход показанного ресурса. Кто захватил её первым, сразу получает и сами ресурсы.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m90"}, {"section": "map", "name": "Посёлки", "page": 77, "base": "Все посёлки (Settlement) одинаковы. Либо доход одного ресурса на шаг вверх, и первый захват сразу даёт столько же ресурсов. Либо улучшить один отряд за половину цены, округляя вверх; первому захватчику бесплатно, и жетон ресурса тогда не кладут. Чужой посёлок можно перевести на другой ресурс.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m91"}, {"section": "map", "name": "Захват города", "page": 76, "base": "Захват даёт кубик фракции прежнего владельца. Его доску города (Town) и отряды фракции захватчик не получает: владелец сохраняет свою доску. Вторичный герой в этом городе больше не появляется, главный туда не отступает.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m92"}, {"section": "map", "name": "Случайный город", "page": 77, "base": "Поле на фрагменте. Фракцию, которой ещё нет в игре, выбирает победитель двух кубиков, либо тянут карту города (Town). Оборона: один отряд «много» на выбор защитника, два «много» и отряды «несколько». Стены и ворота есть, стрелковой башни нет. Доход +10 золота. Пока город ваш, он работает как посёлок (Settlement).", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": ["Инферно", "Набор целей 2"], "modes": {}, "id": "m93"}, {"section": "map", "name": "Карты городов", "page": 72, "base": "Отдельная колода набора целей, чтобы случайно раздать фракции. Карту отсутствующего дополнения пропускают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Набор целей 2", "modes": {}, "id": "m94"}, {"section": "map", "name": "Фрагменты карты: подземные", "page": 34, "base": "У фрагмента своя рубашка, его кладут по шаблону сценария. Между поверхностью и подземельем ходят только через Подземные врата (Subterranean Gate) или Городской портал. Другие карты так не переносят. С поверхности нельзя открыть подземный фрагмент, и наоборот.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Цитадель", "modes": {}, "id": "m95"}, {"section": "map", "name": "Фрагменты карты: морские", "page": 34, "base": "Своя рубашка, расклад по шаблону сценария. На поле бывает и вода, и суша. Шаг с суши на воду заканчивает движение героя в этот ход: оставшиеся очки хода можно тратить не на шаг, и карты колоды тоже больше не двигают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Причал", "modes": {}, "id": "m96"}, {"section": "map", "name": "Фрагменты карты: элементали", "page": 34, "base": "Фрагмент привязан к школе магии. Пока главный герой на нём, заклинания этой школы сильнее на 1.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Сопряжение", "modes": {}, "id": "m97"}, {"section": "map", "name": "Ящик Пандоры", "page": 72, "base": "Колоду тасуют при подготовке. На поле можно вытянуть карту ящика вместо обычного эффекта локации и всё равно закрыть поле чёрным кубиком. Сброс у ящика свой. Постоянная карта ящика заменяет уже лежащую постоянную.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Набор целей 2", "modes": {}, "id": "m98"}, {"section": "tokens", "name": "Жетоны локации", "page": 35, "base": "Жетоны лежат в Сопряжении, Причале, Цитадели и Морских сражениях. Маленький жетон кладут на поле большого фрагмента, он заменяет локацию этого поля. Нельзя ставить его на другой жетон, на заблокированное поле и на поле, без которого не выполнить победу сценария.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": ["Сопряжение", "Причал", "Цитадель", "Морские сражения"], "modes": {}, "id": "m99"}, {"section": "tokens", "name": "Жетоны локации: Монолит", "page": 83, "base": "Вход переносит героя в парный выход. Двусторонний монолит (Monolith) переносит в парный ему. Выход сам по себе пустое поле. Если перенос ставит на союзника и нет очка хода сразу сойти, перенос не делают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Сопряжение", "modes": {}, "id": "m100"}, {"section": "tokens", "name": "Жетоны локации: Подземные врата", "page": 35, "base": "Сценарий указывает, какие фрагменты соединить, но не поле. Жетон связывает оба фрагмента и не перекрывает запрещённые поля. Обе стороны врат — одно поле. Вход бесплатно открывает фрагмент с другой стороны, если он ещё закрыт. Иначе поле пустое.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Цитадель", "modes": {}, "id": "m101"}, {"section": "tokens", "name": "Жетоны локации: Сокровищница", "page": 66, "base": "Маленький жетон кладут на заблокированное поле ближнего или дальнего фрагмента. Он заменяет это поле. Сокровищница считается сушей. Быстрого боя нет, лимита раундов нет, опыт за бой не дают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Морские сражения", "modes": {}, "id": "m102"}, {"section": "tokens", "name": "Жетоны локации: Водоворот", "page": 83, "base": "Жетон переносит героя на другой водоворот (Whirlpool). Если их три, номер выбирает кубик атаки, свой номер перебрасывают. После каждого такого перехода из колоды отрядов убирают один отряд.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Причал", "modes": {}, "id": "m103"}, {"section": "tokens", "name": "Сокровищница: стеки существ", "page": 67, "base": "Жетон стека даёт отряду бонус, нарисованный на жетоне. Пока жетон на отряде, смертельный урон снимает жетон, а не карту, и остаток урона считают уже без него. Отряд сокровищницы без жетона гибнет как обычно. Своего уровня у таких отрядов нет, поэтому эффект, которому нужен уровень, на них не действует. Если отряд получен наградой, статус стека сохраняется между боями: каждый бой тянут новый случайный жетон и потом возвращают его.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Морские сражения", "modes": {}, "id": "m104"}, {"section": "sea", "name": "Доска морского боя", "page": 67, "base": "По желанию для боя в морской локации. На доске нет двух средних зон. Наземные отряды их обходят. Летающие перелетают, но не останавливаются там, даже чтобы атаковать.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "Морские сражения", "modes": {}, "id": "m105"}, {"section": "elem", "name": "Стихийный урон", "page": 42, "base": "Удар считается атакой, но итоговое повреждение игнорирует защиту, как урон заклинания. Это не урон заклинания.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Сопряжение", "modes": {}, "id": "m106"}, {"section": "elem", "name": "Призыв элементалей", "page": 88, "base": "Заклинание кладёт отряд элементалей на пустую клетку из отдельной колоды лицом вверх. «Много» или «несколько» зависит от силы. На большом поле нужен жетон, не карта. Отряд ваш до конца боя и в колоду армии не входит. Если его скорость не выше активного, он ходит в этот же раунд.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Сопряжение", "modes": {}, "id": "m107"}, {"section": "elem", "name": "Призыв демонов", "page": 88, "base": "«Много адских отродий» в бою призывает «несколько» демонов своей фракции рядом с собой или усиливает уже призванных до «много». После боя выжившие демоны входят в колоду отрядов, если не сказано иное.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Инферно", "modes": {}, "id": "m108"}, {"section": "fx", "name": "Клонирование", "page": 86, "base": "Заклинание Причала. Маленький жетон на союзный отряд, большой того же цвета — на соседнюю пустую клетку. Клон копирует карту отряда и не копирует эффекты, висящие на оригинале. Любой урон, в том числе атака с нулём урона, убивает клона. Пропал оригинал — пропадает и клон.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Причал", "modes": {}, "id": "m109"}, {"section": "fx", "name": "Зыбучие пески", "page": 87, "base": "Заклинание Цитадели. Берут 2, 4 или 6 жетонов одного цвета, половину пустых. Мешают рубашкой вверх и кладут на пустые клетки. Свои жетоны можно подсматривать. Отряд, вступивший на знак песков, сразу кончает движение и активацию. Пустой жетон его не останавливает. Два жетона на одной клетке — только от разных игроков.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Цитадель", "modes": {}, "id": "m110"}, {"section": "fx", "name": "Огненная стена", "page": 87, "base": "Заклинание Огненная стена или специальности Луны I и VI ставят препятствие. На обычном поле можно картой, на большом поле нужен жетон. Карту-напоминание кладут рядом с доской. Когда эффект кончился, жетон убирают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": ["Поле боя", "Сопряжение"], "modes": {}, "id": "m111"}, {"section": "fx", "name": "Минное поле", "page": 87, "base": "Заклинание набора целей. 2, 4 или 6 жетонов, половина пустые, половина с уроном 2. Отряд вскрывает клетку: пусто — идёт дальше, мина — 2 урона и, если выжил, продолжает активацию. Два жетона на клетке — только от разных игроков.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Набор целей 2", "modes": {}, "id": "m112"}, {"section": "fx", "name": "Силовое поле", "page": 87, "base": "Жетон отмечает заклинание Силовое поле. Это препятствие: сквозь него проходят только летающие. На обычной доске один жетон, на большом поле два на соседних клетках.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Набор целей 2", "modes": {}, "id": "m113"}, {"section": "fx", "name": "Жетон слабости", "page": 89, "base": "Сторона −1 или −2 снижает атаку отряда. На отряде только один такой жетон. Второй: владелец отряда выбирает, какой оставить.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": ["Причал", "Набор целей 2"], "modes": {}, "id": "m114"}, {"section": "fx", "name": "Жетон атаки", "page": 89, "base": "Сторона 1 или 2 повышает атаку отряда. На отряде только один. Второй: владелец отряда выбирает, какой оставить.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Цитадель", "modes": {}, "id": "m115"}, {"section": "fx", "name": "Жетон разъедания", "page": 89, "base": "Снижает защиту на 1, не ниже нуля. На отряде один. Второй сбрасывают, один остаётся. Лежит до конца боя, если эффект раньше его не снимет.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "Цитадель", "modes": {}, "id": "m116"}, {"section": "field", "name": "Большое поле", "page": 63, "base": "Бой на шестиугольной доске, отряды стоят миниатюрами. В обычной игре доска по желанию: жетон инициативы у напавшего, в бою игроков по согласию до 7 отрядов, против нейтралов по-прежнему пять, лимит раунда против нейтралов снят. Дальность хода равна скорости.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {"adv": {"text": "Доска обязательна. Лимита в пять отрядов нет, ставят все свои. В конце каждого раунда боя возвращают 1 эксперт и берут 2 карты.", "page": 56}, "skir": {"text": "Доска обязательна. Лимита в пять отрядов нет, ставят все свои. В конце каждого раунда боя возвращают 1 эксперт и берут 2 карты.", "page": 56}}, "id": "m117"}, {"section": "field", "name": "Миниатюры вместо карт отрядов", "page": 61, "base": "На большом поле отряды стоят миниатюрами. Миниатюра тоже считается препятствием.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "y", "skir": "y"}, "exp": "Поле боя", "modes": {}, "id": "m118"}, {"section": "variants", "name": "Карточный хаос", "page": 64, "base": "Сброс карты удаляет её. В сброс кладут верхнюю соответствующей колоды. Характеристики и специальности сбрасываются как обычно.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m119"}, {"section": "variants", "name": "Армия из нейтралов", "page": 64, "base": "Жетон популяции вместо найма фракции: по два нейтрала на каждое жилище (Dwelling).", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "n"}, "exp": "База", "modes": {}, "id": "m120"}, {"section": "variants", "name": "Драфт стартовой колоды", "page": 64, "base": "Стартовую колоду собирают передачей карт по кругу, а не обычным набором.", "marks": {"clash": "q", "camp": "n", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m121"}, {"section": "variants", "name": "Раздельные колоды", "page": 65, "base": "Артефакты на три уровня, заклинания на базовые и экспертные. Доступная стопка зависит от фрагмента, где стоит главный герой. Часто используются в турнирах.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m122"}, {"section": "variants", "name": "Золотой фонд", "page": 65, "base": "Плата за найм уходит в резерв у отрядов. Смерть и продажа возвращают стоимость.", "marks": {"clash": "q", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m123"}, {"section": "addrules", "name": "Захваченный город без дохода", "page": 68, "base": "Сложнее. Захваченный город (Town) не приносит ресурсов, но его здания использовать можно.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m124"}, {"section": "addrules", "name": "Без переброса кубиков", "page": 68, "base": "Сложнее. Перебрасывать кубики нельзя.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m125"}, {"section": "addrules", "name": "Кубики сокровищ и ресурсов дают 1", "page": 68, "base": "Сложнее. Каждый кубик сокровищ и ресурсов приносит только 1 ресурс.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m126"}, {"section": "addrules", "name": "Без стартового бонуса", "page": 68, "base": "Сложнее. Стартового бонуса нет.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m127"}, {"section": "addrules", "name": "Старт со вторичным героем", "page": 68, "base": "Проще. Игру начинают со вторичным героем.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m128"}, {"section": "addrules", "name": "Атака наносит хотя бы 1 урон", "page": 68, "base": "Проще. Каждый отряд при атаке наносит не меньше 1 урона.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m129"}, {"section": "addrules", "name": "Двойной доход шахт и посёлков", "page": 68, "base": "Проще. Все шахты (Mine) и посёлки (Settlement) приносят двойной доход.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m130"}, {"section": "addrules", "name": "Обмен ресурсов в любое время", "page": 68, "base": "Проще. Ресурсы меняют в любое время. Рынок (Trading Post) становится одноразовым полем и даёт 1 карту из колоды артефактов.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m131"}, {"section": "addrules", "name": "Продление боя без очка хода", "page": 68, "base": "Проще. Чтобы продлить бой, очко хода не тратят.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m132"}, {"section": "addrules", "name": "Кубик атаки не влияет на урон", "page": 68, "base": "Иначе. Кубик атаки больше не меняет урон, но всё ещё может влиять на навыки.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m133"}, {"section": "addrules", "name": "Астрологи и в ресурсный раунд", "page": 68, "base": "Иначе. Карту астрологов берут ещё и в начале каждого ресурсного раунда.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m134"}, {"section": "addrules", "name": "Без астрологов", "page": 68, "base": "Иначе. Карты астрологов не используются.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m135"}, {"section": "addrules", "name": "Чёрные кубики снимают в раундах 4, 8, 12", "page": 68, "base": "Иначе. В раундах 4, 8 и 12 с одноразовых полей убирают чёрные кубики.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}, "exp": "База", "modes": {}, "id": "m136"}, {"section": "addrules", "name": "Карты в руку идут в сброс", "page": 68, "base": "Иначе. Карту, которую надо сразу взять в руку, кладут в свой сброс.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}, "exp": "База", "modes": {}, "id": "m137"}], "decks": [{"id": "d-art", "name": "Артефакты", "page": 22, "sources": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "rule": "Все артефакты в одну стопку, уровни не делят. Сюда же 10 (из 20) свитков Цитадели.", "about": "Малый, великий и реликвия лежат вместе. Поиск берёт одну из верхних или верх сброса. Сброс пуст — в него сначала кладут верх колоды. Кончилась стопка — сброс тасуют и верх снова открывают. В турнире Песочные часы недоброго часа убраны. Если включили раздельные колоды, стопку режут на три по уровню.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}, {"id": "d-spell", "name": "Заклинания", "page": 22, "sources": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "rule": "Одна общая стопка, включая оставшиеся Волшебные стрелы.", "about": "Сюда кладут заклинания всех коробок, кроме тех, что уже ушли в стартовые колоды героев. Оставшиеся Волшебные стрелы тоже здесь. Стопка и сброс общие для стола. Колода заклинаний ИИ — другая: из этой карты сценария забирают отдельно.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}, {"id": "d-skill", "name": "Навыки", "page": 22, "sources": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "rule": "Одна общая стопка. В Приключении и Стычке из неё убирают Дипломатию и Логистику.", "about": "Все навыки, включая постоянные, в одной стопке. На уровнях II, III, V и VII ищут здесь две верхние и берут одну. В Приключении и Стычке убирают Дипломатию и Логистику, в турнире — Дипломатию. Карта некромантии чужой фракции из руки почти бесполезна: сыграть её можно только в свой сброс. Усиленные навыки сюда не вмешивают.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}, {"id": "d-stat", "name": "Характеристики", "page": 12, "sources": ["База"], "rule": "Четыре стопки: атака, защита, сила магии, знания. Между собой не смешивать.", "about": "При подготовке из каждой стопки берут столько карт, сколько написано на доске героя, и кладут в его колоду Силы и Магии. Оставшееся так и лежит четырьмя стопками. Усиленные характеристики Инферно в эти четыре стопки не входят.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}, {"id": "d-astro", "name": "Предсказания астрологов", "page": 15, "sources": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "rule": "Одна стопка.", "about": "В чётный раунд на карте берут верхнюю карту и читают всем. В Приключении раунд астрологов есть, но карту не берут: вместо неё растёт доход. В Стычке раундов карты нет, стопка не нужна.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}}, {"id": "d-neut", "name": "Нейтралы", "page": 38, "sources": ["База", "Башня", "Оплот", "Крепость", "Инферно", "Цитадель", "Сопряжение", "Причал", "Набор целей", "Набор целей 2"], "rule": "Четыре стопки по уровню. Внутри уровня коробки вместе, уровни между собой не смешивать.", "about": "Бронза, серебро, золото и лазурь. На охраняемое поле набирают случайные карты по таблице на обороте свода. Кончилась стопка уровня — тасуют её сброс. Если сложность поля ниже уровня героя, боя нет и карты не вскрывают. Отряды сокровищниц и призванные элементали в эти четыре стопки не кладут.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "n", "skir": "n"}}, {"id": "d-scroll", "name": "Запас свитков", "page": 28, "sources": ["Цитадель"], "rule": "Отдельная стопка. Это остальные 10 (из 20). Первые 10 лежат в артефактах.", "about": "В Цитадели 20 свитков. Десять подмешаны к артефактам и могут выпасть поиском. Десять ждут отдельно: пустой свиток и часть локаций берут карту отсюда. На свитке два заклинания, он не в руке и не в лимите. В кампании свиток в следующий сценарий не переносят.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "q", "skir": "n"}}, {"id": "d-mach", "name": "Боевые машины", "page": 28, "sources": ["Оплот", "Причал", "Набор целей"], "rule": "Одна стопка лицом вверх.", "about": "Машины Оплота, пушки Причала и машины набора целей лежат вместе, лицом вверх: их выбирают, а не тянут. Покупка на рынке (Trading Post) занимает весь визит, на фабрике (War Machine Factory) цена ниже. Машина — постоянная карта и занимает единственный постоянный слот. В Стычке рынка нет.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "n"}}, {"id": "d-estat", "name": "Усиленные характеристики", "page": 24, "sources": ["Инферно"], "rule": "Отдельная стопка лицом вверх. В колоду характеристик не вмешивать.", "about": "Это экспертный эффект обычной характеристики без траты жетона эксперта. Звёздная ось (Star Axis) забирает одну характеристику из руки и даёт усиленную того же типа. Если на карте нет Звёздной оси и никто не берёт их эффектом, стопку можно не выкладывать.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}}, {"id": "d-eskill", "name": "Усиленные навыки", "page": 25, "sources": ["Морские сражения"], "rule": "Отдельная стопка лицом вверх. В колоду навыков не вмешивать.", "about": "Жетон усиленного навыка в момент получения нового навыка меняет обычную карту на усиленную. Карту, которая уже в колоде, руке или сбросе, жетон не трогает. Жетон дают только сценарии, где он назван. Нет жетона — стопку не кладут.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}}, {"id": "d-morale", "name": "Мораль", "page": 19, "sources": ["Поле боя"], "rule": "Две стопки: плюс и минус. Друг с другом не смешивать. Карты со значком Battlefield только в Приключении и Стычке.", "about": "Это замена жетонов, не добавка к ним. В Приключении и Стычке обе стопки обязательны, положительную берут поиском двух. В остальных режимах колоды по желанию, и тогда тянут одну положительную. В руке не больше двух положительных. Пустую стопку собирают из её сброса. Сыгранную карту кладут вниз своей стопки.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "y", "skir": "y"}}, {"id": "d-pandora", "name": "Ящик Пандоры", "page": 72, "sources": ["Набор целей 2"], "rule": "Своя колода и свой сброс.", "about": "На поле ящика можно вытянуть карту и сыграть её вместо обычного текста локации. Поле всё равно закрывают чёрным кубиком. Если карта постоянная, а слот уже занят, старую постоянную сбрасывают. Нет такого поля на карте — колоду не выкладывают.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}}, {"id": "d-city", "name": "Города", "page": 72, "sources": ["Набор целей 2"], "rule": "Отдельная колода. Карту отсутствующей коробки пропускают.", "about": "Карты раздают, если фракцию не выбирают сами. Та же колода нужна полю «Случайный город». Фракции, которой нет на столе, в розыгрыше быть не должно.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}}, {"id": "d-bank", "name": "Отряды сокровищниц", "page": 66, "sources": ["Морские сражения"], "rule": "Лицом вверх рядом с нейтралами. В колоды нейтралов не вмешивать.", "about": "На бой берут названные картой сокровищницы отряды. У них нет уровня, быстрого боя нет. После боя карты возвращают в эту стопку, даже если отряд был повержен. Жетоны стека — отдельно: они меняют статы и снимаются вместо смерти.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "n", "skir": "n"}}, {"id": "d-elem", "name": "Призванные элементали", "page": 88, "sources": ["Сопряжение"], "rule": "Лицом вверх рядом с нейтралами. В армию после боя не входят.", "about": "Заклинание берёт отсюда «несколько» или «много» нужной стихии и ставит на пустую клетку. На большом поле вместо карты нужен жетон. Отряд ваш до конца боя или до гибели и в колоду армии не записывается. Без заклинаний призыва стопку можно не класть.", "marks": {"clash": "q", "camp": "q", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "q"}}, {"id": "d-event", "name": "События", "page": 15, "sources": ["Крепость"], "rule": "Своя колода. По желанию, если игроков двое и больше. В одиночную кампанию не входит.", "about": "Два и больше игроков: в начале ресурсного раунда, после дохода, тянут одну карту. Первый раз тянет первый игрок, дальше по кругу. Одиночная кампания эту стопку не берёт.", "marks": {"clash": "q", "camp": "n", "ally": "q", "coop": "q", "tour": "q", "adv": "q", "skir": "n"}}, {"id": "d-adv", "name": "Приключения", "page": 58, "sources": ["Поле боя"], "rule": "Своя колода вместо карты.", "about": "Только режим Приключение. Колода заменяет карту. Бой такой карты считают кубиками, без доски, финал идёт на большом поле. В конце хода на руке оставляют одну карту приключения. «Волшебный источник» сбрасывают всегда.", "marks": {"clash": "n", "camp": "n", "ally": "n", "coop": "n", "tour": "n", "adv": "y", "skir": "n"}}, {"id": "d-ai", "name": "Колода ИИ", "page": 50, "sources": ["База"], "rule": "Сила, магия и умение в одной колоде героя ИИ. С колодой заклинаний не смешивать.", "about": "Сценарий пишет, сколько карт силы, магии и умения взять. Перед каждым боем сброс вмешивают обратно. На активацию отряда — одна карта. Если колода кончилась в этом бою, до конца боя её не берут. Нет героя ИИ — нет и этой колоды.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}}, {"id": "d-aispell", "name": "Заклинания ИИ", "page": 50, "sources": ["База"], "rule": "Отдельная стопка героя ИИ.", "about": "Сценарий называет заклинания. Перед боем стопку тасуют вместе со сбросом. Карта магии из колоды ИИ берёт следующее заклинание. Если заклинания кончились до конца боя, их сброс тасуют сразу. Нет нужной копии — ИИ получает Волшебную стрелу.", "marks": {"clash": "n", "camp": "q", "ally": "n", "coop": "n", "tour": "n", "adv": "n", "skir": "n"}}, {"id": "d-faction", "name": "Отряды фракции", "page": 36, "sources": ["Коробка выбранной фракции"], "rule": "У каждой фракции своя стопка. Фракции между собой не смешивать.", "about": "Семь двусторонних карт фракции. В колоде армии только те, кого наняли или дал сценарий. Чужая фракция свою коробку в вашу не подмешивает. Мантикоры набора целей 2 заменяют мантикор Темницы и в нейтралы не идут. В Стычке армию не нанимают: сторону карт задаёт длина партии.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}, {"id": "d-hero", "name": "Колода Силы и Магии", "page": 22, "sources": ["База", "Карты выбранного героя"], "rule": "Личная колода героя. С чужой колодой и с общими стопками не смешивать.", "about": "Старт: характеристики с доски, Волшебные стрелы по типу героя, стартовый навык и специальность I. Это колода только главного героя. Пустую собирают из его сброса. В Приключении до финала она закрыта. Вторичный герой своей колоды не имеет.", "marks": {"clash": "y", "camp": "y", "ally": "y", "coop": "y", "tour": "y", "adv": "y", "skir": "y"}}]}</script>
+<script>
+const PDF = "Heroes3_Russian_Rules_Rewrite_2_0_1.pdf";
+const data = JSON.parse(document.getElementById("data").textContent);
+const MARK = { y: "✓", n: "✗", q: "✓?" };
+const LABEL = { y: "есть", n: "нет", q: "по желанию или если даёт сценарий" };
+
+const modeSel = document.getElementById("mode");
+const mechSel = document.getElementById("mech");
+const qInput = document.getElementById("q");
+const grid = document.getElementById("grid");
+const details = document.getElementById("details");
+const side = document.getElementById("side");
+const countEl = document.getElementById("count");
+
+function pill(exp) {
+  const s = document.createElement("span");
+  s.className = "pill";
+  s.textContent = exp;
+  return s;
+}
+
+function expPills(exp) {
+  const wrap = document.createElement("span");
+  wrap.className = "pills";
+  const list = Array.isArray(exp) ? exp : [exp];
+  list.forEach((name) => wrap.append(pill(name)));
+  return wrap;
+}
+
+function pdf(page, label) {
+  const a = document.createElement("a");
+  a.href = PDF + "#page=" + page;
+  a.target = "_blank";
+  a.rel = "noopener";
+  a.textContent = label;
+  return a;
+}
+
+function noteOf(mech, modeId) {
+  const over = mech.modes[modeId];
+  if (!over || mech.marks[modeId] === "n") return null;
+  return { text: over.text, page: over.page || mech.page };
+}
+
+function jump(id) {
+  return (ev) => {
+    ev.preventDefault();
+    history.replaceState(null, "", "#" + id);
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+}
+
+function selected() {
+  const mode = modeSel.value;
+  const mech = mechSel.value;
+  const q = qInput.value.trim().toLowerCase();
+  return data.mechs.filter((m) => {
+    if (mech && m.id !== mech) return false;
+    if (q && !m.name.toLowerCase().includes(q)) return false;
+    return true;
+  }).map((m) => ({ m, mode }));
+}
+
+function fitHeader() {
+  const h = document.querySelector(".top").offsetHeight;
+  document.documentElement.style.setProperty("--head", (h + 8) + "px");
+}
+
+function viewName() {
+  return document.body.dataset.view || "mech";
+}
+
+function setView(name) {
+  document.body.dataset.view = name;
+  document.getElementById("view-mech").classList.toggle("on", name === "mech");
+  document.getElementById("view-deck").classList.toggle("on", name === "deck");
+  qInput.placeholder = name === "deck" ? "Название стопки" : "Название механики";
+  document.getElementById("jump").textContent = name === "deck" ? "К стопкам" : "К сетке";
+  side.setAttribute("aria-label", name === "deck" ? "Колоды" : "Механики");
+  qInput.value = "";
+  if (name === "deck") mechSel.value = "";
+  render();
+}
+
+function applyTheme(name) {
+  document.body.dataset.theme = name;
+  document.getElementById("theme").textContent = name === "dark" ? "Светлая тема" : "Тёмная тема";
+  try { localStorage.setItem("homm3-mechanics-theme", name); } catch (e) {}
+}
+
+function selectedDecks() {
+  const q = qInput.value.trim().toLowerCase();
+  return data.decks.filter((d) => !q || (d.name + " " + d.rule + " " + d.about).toLowerCase().includes(q));
+}
+
+function renderModes() {
+  const box = document.getElementById("modes-intro");
+  if (mechSel.value || qInput.value.trim()) {
+    box.replaceChildren();
+    return;
+  }
+  const mode = modeSel.value;
+  const modes = mode ? data.modes.filter(([id]) => id === mode) : data.modes;
+  box.replaceChildren();
+  modes.forEach(([, name, blurb]) => {
+    const card = document.createElement("article");
+    card.className = "mode-card";
+    const h = document.createElement("h2");
+    h.textContent = name;
+    const para = document.createElement("p");
+    para.textContent = blurb;
+    card.append(h, para);
+    box.append(card);
+  });
+}
+
+function renderDecks() {
+  const box = document.getElementById("decks");
+  const mode = modeSel.value;
+  const modes = mode ? data.modes.filter(([id]) => id === mode) : data.modes;
+  const rows = selectedDecks();
+  countEl.textContent = "Стопок " + rows.length + " из " + data.decks.length;
+  box.replaceChildren();
+  const h = document.createElement("h2");
+  h.textContent = "Колоды карт";
+  const note = document.createElement("p");
+  note.className = "note";
+  note.textContent = "Название стопки открывает объяснение ниже. Строка «свод, стр.» в объяснении открывает PDF. Пилюли — коробки, из которых стопка собрана. ✓ стопка в этом режиме есть. ✗ её нет. ✓? стопку можно не класть, остальные колоды от этого не меняются.";
+  const wrap = document.createElement("div");
+  wrap.className = "wrap";
+  const table = document.createElement("table");
+  table.className = "decks";
+  const hr = document.createElement("tr");
+  ["Стопка", "Как собрать", ...modes.map(([, name]) => name)].forEach((title) => {
+    const th = document.createElement("th");
+    th.textContent = title;
+    hr.append(th);
+  });
+  const thead = document.createElement("thead");
+  thead.append(hr);
+  table.append(thead);
+  const tb = document.createElement("tbody");
+  rows.forEach((d) => {
+    const tr = document.createElement("tr");
+    const name = document.createElement("td");
+    const title = document.createElement("div");
+    const link = document.createElement("a");
+    link.href = "#" + d.id;
+    link.textContent = d.name;
+    link.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      location.hash = d.id;
+      document.getElementById(d.id).scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    title.append(link);
+    const pills = document.createElement("div");
+    pills.className = "pills";
+    d.sources.forEach((src) => pills.append(pill(src)));
+    name.append(title, pills);
+    const rule = document.createElement("td");
+    rule.textContent = d.rule;
+    tr.append(name, rule);
+    modes.forEach(([id]) => {
+      const td = document.createElement("td");
+      td.className = "mark";
+      const mark = d.marks[id];
+      const s = document.createElement("span");
+      s.className = mark === "y" ? "yes" : mark === "n" ? "no" : "maybe";
+      s.textContent = MARK[mark];
+      td.append(s);
+      tr.append(td);
+    });
+    tb.append(tr);
+  });
+  table.append(tb);
+  wrap.append(table);
+  box.append(h, note, wrap);
+  rows.forEach((d) => {
+    const art = document.createElement("article");
+    art.id = d.id;
+    const h2 = document.createElement("h2");
+    h2.append(d.name, " ");
+    h2.append(pdf(d.page, "Свод, стр. " + d.page));
+    const pills = document.createElement("div");
+    pills.className = "pills";
+    d.sources.forEach((src) => pills.append(pill(src)));
+    const rule = document.createElement("p");
+    rule.className = "base";
+    rule.textContent = d.rule;
+    const about = document.createElement("p");
+    about.className = "base";
+    about.textContent = d.about;
+    art.append(h2, pills, rule, about);
+    box.append(art);
+  });
+}
+
+function renderMechs() {
+  renderModes();
+  const rows = selected();
+  const mode = modeSel.value;
+  const modes = mode ? data.modes.filter(([id]) => id === mode) : data.modes;
+  countEl.textContent = "Показано " + rows.length + " из " + data.mechs.length;
+
+  grid.replaceChildren();
+  const wrap = document.createElement("div");
+  wrap.className = "wrap";
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  const corner = document.createElement("th");
+  corner.textContent = "Механика";
+  hr.append(corner);
+  modes.forEach(([, name]) => {
+    const th = document.createElement("th");
+    th.textContent = name;
+    hr.append(th);
+  });
+  thead.append(hr);
+  table.append(thead);
+  const tb = document.createElement("tbody");
+  rows.forEach(({ m }) => {
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td");
+    const name = document.createElement("div");
+    name.className = "mech-name";
+    const open = document.createElement("a");
+    open.href = "#" + m.id;
+    open.textContent = m.name;
+    open.addEventListener("click", jump(m.id));
+    name.append(open, expPills(m.exp));
+    td0.append(name);
+    tr.append(td0);
+    modes.forEach(([id, title]) => {
+      const td = document.createElement("td");
+      td.className = "mark";
+      const mark = m.marks[id];
+      const cls = mark === "y" ? "yes" : mark === "n" ? "no" : "maybe";
+      const sign = document.createElement("span");
+      sign.className = cls;
+      sign.textContent = MARK[mark];
+      sign.setAttribute("aria-label", title + ", " + m.name + ", " + LABEL[mark]);
+      td.append(sign);
+      if (noteOf(m, id)) {
+        const a = document.createElement("a");
+        a.href = "#" + m.id + "-" + id;
+        a.className = "diff";
+        a.textContent = "≠";
+        a.title = "В режиме «" + title + "» правило другое";
+        a.addEventListener("click", jump(m.id + "-" + id));
+        td.append(a);
+      }
+      tr.append(td);
+    });
+    tb.append(tr);
+  });
+  table.append(tb);
+  wrap.append(table);
+  grid.append(wrap);
+
+  details.replaceChildren();
+  let last = "";
+  rows.forEach(({ m }) => {
+    if (m.section !== last) {
+      last = m.section;
+      const h = document.createElement("h2");
+      h.className = "block";
+      h.textContent = data.sections.find(([id]) => id === m.section)[1];
+      details.append(h);
+    }
+    const art = document.createElement("article");
+    art.id = m.id;
+    const h2 = document.createElement("h2");
+    h2.append(m.name, " ", expPills(m.exp));
+    art.append(h2);
+    const base = document.createElement("p");
+    base.className = "base";
+    base.append(m.base + " ");
+    base.append(pdf(m.page, "Свод, стр. " + m.page));
+    art.append(base);
+    const box = document.createElement("div");
+    box.className = "modes";
+    modes.forEach(([id, title]) => {
+      const n = noteOf(m, id);
+      if (!n) return;
+      const div = document.createElement("div");
+      div.className = "mode q";
+      div.id = m.id + "-" + id;
+      const h3 = document.createElement("h3");
+      h3.textContent = "≠ " + title;
+      const p = document.createElement("p");
+      p.textContent = n.text + " ";
+      p.append(pdf(n.page, "Свод, стр. " + n.page));
+      div.append(h3, p);
+      box.append(div);
+    });
+    if (box.children.length) art.append(box);
+    details.append(art);
+  });
+
+}
+
+function render() {
+  fitHeader();
+  if (viewName() === "deck") renderDecks();
+  else renderMechs();
+  fillSide();
+}
+
+function fillSelects() {
+  modeSel.append(new Option("Все режимы", ""));
+  data.modes.forEach(([id, name]) => modeSel.append(new Option(name, id)));
+  mechSel.append(new Option("Все механики", ""));
+  data.mechs.forEach((m) => mechSel.append(new Option(m.name, m.id)));
+}
+
+function fillSide() {
+  side.replaceChildren();
+  if (viewName() === "deck") {
+    const label = document.createElement("div");
+    label.className = "sec";
+    label.textContent = "Стопки";
+    side.append(label);
+    selectedDecks().forEach((d) => {
+      const a = document.createElement("a");
+      a.href = "#" + d.id;
+      a.textContent = d.name;
+      a.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        document.getElementById(d.id).scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      side.append(a);
+    });
+    return;
+  }
+  let last = "";
+  data.mechs.forEach((m) => {
+    if (m.section !== last) {
+      last = m.section;
+      const d = document.createElement("div");
+      d.className = "sec";
+      d.textContent = data.sections.find(([id]) => id === m.section)[1];
+      side.append(d);
+    }
+    const a = document.createElement("a");
+    a.href = "#" + m.id;
+    a.dataset.id = m.id;
+    a.textContent = m.name;
+    a.classList.toggle("on", a.dataset.id === mechSel.value);
+    a.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      mechSel.value = m.id;
+      qInput.value = "";
+      render();
+      document.getElementById(m.id).scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    side.append(a);
+  });
+}
+
+modeSel.addEventListener("change", render);
+mechSel.addEventListener("change", () => { qInput.value = ""; render(); });
+qInput.addEventListener("input", () => { mechSel.value = ""; render(); });
+document.getElementById("reset").addEventListener("click", () => {
+  modeSel.value = "";
+  mechSel.value = "";
+  qInput.value = "";
+  render();
+});
+document.getElementById("view-mech").addEventListener("click", () => setView("mech"));
+document.getElementById("view-deck").addEventListener("click", () => setView("deck"));
+document.getElementById("theme").addEventListener("click", () => {
+  applyTheme(document.body.dataset.theme === "dark" ? "light" : "dark");
+});
+document.getElementById("jump").addEventListener("click", () => {
+  const id = viewName() === "deck" ? "decks" : "grid";
+  document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+fillSelects();
+let saved = "light";
+try { saved = localStorage.getItem("homm3-mechanics-theme") || "light"; } catch (e) {}
+applyTheme(saved === "dark" ? "dark" : "light");
+if (location.hash.indexOf("#d-") === 0) setView("deck");
+else render();
+window.addEventListener("resize", fitHeader);
+function goHash() {
+  if (!location.hash) return;
+  const el = document.getElementById(location.hash.slice(1));
+  if (!el) return;
+  fitHeader();
+  const top = el.getBoundingClientRect().top + window.scrollY - document.querySelector(".top").offsetHeight - 8;
+  window.scrollTo({ top: top, behavior: "instant" });
+}
+goHash();
+window.addEventListener("load", goHash);
+</script>
+</body>
+</html>

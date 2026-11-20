@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Герои III — с чего начать</title>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body data-theme="light">
+<header class="top">
+  <div class="title-row">
+    <h1>Герои III</h1>
+    <nav class="app">
+      <a class="on" href="index.html">Старт</a>
+      <a href="rules.html">Памятка</a>
+      <a href="missions.html">Миссии</a>
+      <a href="locations.html">Локации</a>
+    </nav>
+    <button id="theme" type="button">Тёмная тема</button>
+  </div>
+</header>
+<div class="layout">
+<main>
+<section class="card">
+  <h2>Что это</h2>
+  <p>Подготовка к партии в настольные «Герои Меча и Магии III» издательства Archon Studio. Это не компьютерная игра. Страницы помогают выбрать миссию, собрать колоды и жетоны и открыть нужную страницу свода.</p>
+  <h2>Куда смотреть</h2>
+  <ul>
+    <li><a href="missions.html">Миссии</a> — сценарий, обязательные механики и что выложить на стол. Можно начать с миссии или с механик и колод.</li>
+    <li><a href="rules.html">Памятка</a> — правила и колоды. У строки есть ссылка на страницу свода.</li>
+    <li><a href="locations.html">Локации</a> — поля из книг дополнений.</li>
+    <li><a href="Heroes3_Russian_Rules_Rewrite_2_0_1.pdf">Свод правил</a> — русский текст, PDF в этой же папке.</li>
+  </ul>
+  <p class="kicker">Версия 1, 20 ноября 2026. Открывайте эту страницу. Другу отдавайте всю папку.</p>
+</section>
+</main>
+</div>
+<script>
+const themeBtn = document.getElementById("theme");
+function applyTheme(name) {
+  document.body.setAttribute("data-theme", name);
+  themeBtn.textContent = name === "dark" ? "Светлая тема" : "Тёмная тема";
+  try { localStorage.setItem("homm3-mechanics-theme", name); } catch (e) {}
+}
+themeBtn.addEventListener("click", function () {
+  applyTheme(document.body.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+let theme = "light";
+try { theme = localStorage.getItem("homm3-mechanics-theme") || "light"; } catch (e) {}
+applyTheme(theme === "dark" ? "dark" : "light");
+</script>
+</body>
+</html>
