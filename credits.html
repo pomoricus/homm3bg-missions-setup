@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Герои III — источники</title>
+<link rel="stylesheet" href="theme.css">
+</head>
+<body data-theme="light">
+<header class="top">
+  <div class="title-row">
+    <h1>Герои III</h1>
+    <nav class="app">
+      <a href="index.html">Старт</a>
+      <a href="missions.html">Миссии</a>
+      <a href="rules.html">Памятка</a>
+      <a href="locations.html">Локации</a>
+      <a class="on" href="credits.html">Источники</a>
+    </nav>
+    <button id="theme" type="button">Тёмная тема</button>
+  </div>
+</header>
+<div class="layout">
+<main>
+  <section class="card">
+    <h2>Откуда это взято</h2>
+    <p>Страницы готовят партию в настольной игре «Герои Меча и Магии III» издательства Archon Studio. Это не официальное издание Archon и не издание Ubisoft. Продавать их нельзя.</p>
+    <h3>Русский свод правил</h3>
+    <p>Файл <a href="Heroes3_Russian_Rules_Rewrite_2_0_1.pdf">Heroes3_Russian_Rules_Rewrite_2_0_1.pdf</a> — русский свод 2.0.1 от 19 сентября 2026. Он взят без правок из репозитория <a href="https://github.com/Heegu-sama/Homm3BG">Heegu-sama/Homm3BG</a>, релиз <a href="https://github.com/Heegu-sama/Homm3BG/releases/tag/v2.0.1">v2.0.1</a>.</p>
+    <p>Памятка на этих страницах — сокращение того же свода: текст переставлен и укорочен. Лицензия свода и этой переработки — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">Creative Commons Attribution-NonCommercial-ShareAlike 4.0</a>. Текст лицензии: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">legalcode</a>.</p>
+    <p>Вики того же проекта, с которой сверялись формулировки карт: <a href="https://en.homm3bg.wiki/">en.homm3bg.wiki</a>.</p>
+    <h3>Официальные книги и картинки</h3>
+    <p>Книги миссий, гиды по содержимому и схемы в папках <code>pdf/</code> и <code>img/</code> — материалы Archon Studio. «Герои Меча и Магии» — товарный знак Ubisoft Entertainment, игра издаётся по лицензии Ubisoft. На эти файлы лицензия свода не распространяется.</p>
+    <p>Рассказы миссий на страницах переведены с английских книг миссий. Это не официальный перевод Archon и не перевод из репозитория свода.</p>
+    <p>Загрузки издателя: <a href="https://archon-studio.com/downloads/heroes-iii">archon-studio.com/downloads/heroes-iii</a>.</p>
+  </section>
+</main>
+</div>
+<script>
+const themeBtn = document.getElementById("theme");
+function applyTheme(name) {
+  document.body.setAttribute("data-theme", name);
+  themeBtn.textContent = name === "dark" ? "Светлая тема" : "Тёмная тема";
+  try { localStorage.setItem("homm3-mechanics-theme", name); } catch (e) {}
+}
+themeBtn.addEventListener("click", function () {
+  applyTheme(document.body.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+let theme = "light";
+try { theme = localStorage.getItem("homm3-mechanics-theme") || "light"; } catch (e) {}
+applyTheme(theme === "dark" ? "dark" : "light");
+</script>
+</body>
+</html>
