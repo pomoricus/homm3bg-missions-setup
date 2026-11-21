@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Герои III — миссии</title>
-<link rel="stylesheet" href="theme.css?v=gold2">
+<link rel="stylesheet" href="theme.css?v=gold3">
 </head>
 <body data-theme="dark">
 <header class="top">
@@ -6290,23 +6290,203 @@ const BOX_ROW = ["core", "tower", "sg", "sg2", "rampart", "fortress", "inferno",
 function tileCells(box, list) {
   return list.map(function (c) { return '<span class="code">' + tile(c, box) + "</span>"; }).join("");
 }
-function tileTable(needs, have) {
-  const byType = {};
-  needs.forEach(function (row) {
-    if (!byType[row.type]) byType[row.type] = { type: row.type, n: row.n, notes: [] };
-    if (row.note && byType[row.type].notes.indexOf(row.note) === -1) byType[row.type].notes.push(row.note);
+const CODE_BOX = {};
+Object.keys(D.pages).forEach(function (box) {
+  Object.keys(D.pages[box]).forEach(function (code) { if (!CODE_BOX[code]) CODE_BOX[code] = box; });
+});
+function expandCodes(text) {
+  const src = text.replace(/(#?)([SNFCWU])(\d+)\s*[–-]\s*(#?)([SNFCWU])(\d+)/g, function (_, hash, L1, a, hash2, L2, b) {
+    if (L1 !== L2) return _;
+    const mark = hash || hash2;
+    const list = [];
+    for (let i = Number(a); i <= Number(b); i++) list.push(mark + L1 + i);
+    return list.join(", ");
   });
+  const codes = [];
+  src.replace(/#?[SNFCWU]\d{1,2}/g, function (c) {
+    if (codes.indexOf(c) < 0) codes.push(c);
+    return c;
+  });
+  return codes;
+}
+function cellsOf(codes) {
+  const cells = {};
+  codes.forEach(function (code) {
+    const box = CODE_BOX[code];
+    if (!box) return;
+    if (!cells[box]) cells[box] = [];
+    if (cells[box].indexOf(code) < 0) cells[box].push(code);
+  });
+  return cells;
+}
+function tileKind(text) {
+  const t = text.toLowerCase();
+  if (/центральн[а-яё]*\s+подземн|подземн[а-яё]*\s+центральн/.test(t)) return "undercenter";
+  if (/центральн[а-яё]*\s+морск|морск[а-яё]*\s+центральн/.test(t)) return "seacenter";
+  const found = [
+    ["start", t.search(/стартов/)], ["far", t.search(/дальн/)], ["near", t.search(/ближн/)],
+    ["center", t.search(/центральн/)], ["sea", t.search(/морск/)], ["under", t.search(/подземн/)]
+  ].filter(function (x) { return x[1] >= 0; });
+  found.sort(function (a, b) { return a[1] - b[1]; });
+  return found.length ? found[0][0] : "";
+}
+function colSub(text) {
+  const t = text.toLowerCase();
+  if (t.indexOf("сверху") >= 0) return "сверху";
+  if (t.indexOf("снизу") >= 0) return "снизу";
+  if (t.indexOf("без посёлка") >= 0) return "без посёлка";
+  if (t.indexOf("с посёлком") >= 0) return "с посёлком";
+  if (t.indexOf("стихийн") >= 0) return "стихийные";
+  if (t.indexOf("отложить") >= 0) return "отложить";
+  return "";
+}
+function splitKinds(text) {
+  const marks = [];
+  const re = /дальн|ближн/gi;
+  let m;
+  while ((m = re.exec(text))) marks.push(m.index);
+  if (marks.length < 2) return [text];
+  let cut = marks[1];
+  const num = text.slice(0, cut).match(/(\d+)\s+$/);
+  if (num) cut -= num[0].length;
+  const second = text.slice(cut);
+  if (!expandCodes(second).length) return [text];
+  return [text.slice(0, cut), second];
+}
+function poolFixed(text, have) {
+  const m = text.match(/\{pool:([^}]+)\}/);
+  if (!m) return null;
+  const cells = {};
+  m[1].split(";").forEach(function (entry) {
+    const eq = entry.indexOf("=");
+    if (eq < 0) return;
+    const box = entry.slice(0, eq).split(":")[0];
+    if (have && !have[box]) return;
+    const codes = entry.slice(eq + 1).split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+    if (codes.length) cells[box] = codes;
+  });
+  return cells;
+}
+function pieceBits(text) {
+  const bits = [];
+  text.replace(/\{pool:[^}]+\}/g, " ").split(/\s*;\s*/).forEach(function (part) {
+    if (bits.length && !/^\s*\d+\s+/.test(part) && !/^\s*од(?:ин|на|но)/.test(part) && !/по одному/.test(part)) {
+      bits[bits.length - 1] += "; " + part;
+      return;
+    }
+    part.split(/\s+и\s+(?=\d+\s+)/).forEach(function (bit) {
+      const found = bit.match(/^(.*?(?:из)\s+\S.*?)\s+и\s+(\S.*)$/);
+      const leftChoose = found && /од(?:ин|на|но)/.test(found[1]) || (found && /\d+\s+[А-Яа-яЁё]/.test(found[1]));
+      if (found && leftChoose && !/случайн/.test(found[1]) && expandCodes(found[2]).length && !/^\s*\d+\s+/.test(found[2])) {
+        bits.push(found[1]);
+        bits.push(found[2]);
+      } else bits.push(bit);
+    });
+  });
+  return bits.filter(Boolean);
+}
+function pieceCount(text) {
+  const plain = text.replace(/\{pool:[^}]+\}/g, " ");
+  const lead = plain.match(/^\s*(\d+)\s+(?:стартов|дальн|ближн|центральн|морск|подземн)/);
+  if (lead) return Number(lead[1]);
+  if (/по одному/.test(plain)) {
+    const parts = plain.split(/\s*;\s*/).filter(function (p) { return expandCodes(p).length; });
+    if (parts.length) return parts.length;
+  }
+  const bits = pieceBits(plain).filter(function (bit) { return expandCodes(bit).length; });
+  if (!bits.length) {
+    const only = plain.match(/(\d+)\s+(?:случайн\w*|любых|тайл\w*)/);
+    return only ? Number(only[1]) : 0;
+  }
+  let n = 0;
+  bits.forEach(function (bit) {
+    const nums = [];
+    const re = /(\d+)\s+(?:случайн\w*|любых|(?:[А-Яа-яЁё]+\s+){1,3}из)/g;
+    let m;
+    while ((m = re.exec(bit))) nums.push(Number(m[1]));
+    if (nums.length) n += nums.reduce(function (a, b) { return a + b; }, 0);
+    else if (/од(?:ин|на|но|ному)/.test(bit) && /из/.test(bit)) n += 1;
+    else n += expandCodes(bit).length;
+  });
+  return n || expandCodes(plain).length;
+}
+function tidyNote(text, ctx) {
+  let s = text.replace(/\{pool:[^}]+\}/g, " ").replace(/\{have:[^}]+\}/g, " ").replace(/\{map\}/g, " ").replace(/\{sel:[^}]+\}/g, " ");
+  s = s.replace(/#?[SNFCWU]\d{1,2}(?:\s*[–-]\s*#?[SNFCWU]?\d{1,2})?/g, " ");
+  s = s.replace(/(стартов|дальн|ближн|центральн|морск|подземн|стихийн)[а-яё]*/gi, " ");
+  s = s.replace(/(^|[^A-Za-zА-Яа-яЁё])[IVX]{1,4}(\s*[–-]\s*[IVX]{1,4})?/g, " ");
+  s = s.replace(/(Замок|Башн|Темниц|Некрополис|Оплот|Крепост|Инферно|Цитадел|Сопряжени|Причал|базов|коробк|пул)[а-яё]*/gi, " ");
+  s = s.replace(/\d+\s*(случайн|любых|тайл)[а-яё]*/gi, " ");
+  s = s.replace(/по одному/gi, " ").replace(/од(?:ин|на|но|ному)/gi, " ");
+  s = s.replace(/[.,:;–—\-()«»]/g, " ").replace(/\s+/g, " ").trim();
+  if (!/уже|геро|обелиск|нельзя|отлож|рубаш|берут|ребер|рёбер|открыт|поле|город|рынк|граал|утопи|пандор|перемеш|запас|класть|посещ|добавля|соединя|подписан|воздух|огон|вод|земл|страж|лиц|ребер/.test(s.toLowerCase())) s = "";
+  const warns = [];
+  text.replace(/\{have:([^}]+)\}/g, function (_, id) {
+    if (ctx && ctx.have && !ctx.have[id]) warns.push(fill("{have:" + id + "}", ctx));
+    return "";
+  });
+  return (s + (warns.length ? " " + warns.join(" ") : "")).trim();
+}
+function proseColumns(text, ctx) {
+  if (text.indexOf("{need:") !== -1) return null;
+  if (!/[SNFCWU]\d/.test(text) && text.indexOf("{pool:") < 0) return null;
+  const rows = [];
+  splitKinds(text).forEach(function (piece) {
+    const type = tileKind(piece) || tileKind(text);
+    if (!type) return;
+    const pooled = poolFixed(piece, ctx.have);
+    let codes = pooled ? [] : expandCodes(piece);
+    if (!pooled && type === "near" && /подземн/.test(piece)) {
+      const under = codes.filter(function (c) { return c.charAt(0) === "U"; });
+      codes = codes.filter(function (c) { return c.charAt(0) !== "U"; });
+      if (under.length) {
+        let cut = piece.search(/подземн/i);
+        const num = piece.slice(0, cut).match(/(\d+\s+(?:случайн[а-яё]*\s+)?)$/i);
+        if (num) cut -= num[0].length;
+        const tail = piece.slice(cut);
+        rows.push({ type: "under", n: pieceCount(tail), sub: "", fixed: cellsOf(under), note: tidyNote(tail, ctx) });
+        piece = piece.slice(0, cut);
+      }
+    }
+    if (!pooled && !codes.length) return;
+    const listed = pooled
+      ? Object.keys(pooled).reduce(function (n, box) { return n + pooled[box].length; }, 0)
+      : codes.length;
+    const n = pieceCount(piece);
+    const groups = pieceBits(piece).filter(function (bit) { return expandCodes(bit).length; }).length;
+    let note = tidyNote(piece, ctx);
+    if (groups > 1 && n < listed) note = piece.replace(/\{have:[^}]+\}/g, "").replace(/\{pool:[^}]+\}/g, "пул").replace(/\s+/g, " ").trim();
+    rows.push({ type: type, n: n, sub: colSub(piece) || colSub(text), fixed: pooled || cellsOf(codes), note: note });
+  });
+  return rows.length ? rows : null;
+}
+function tileTable(needs, have) {
   const cols = [];
-  TYPE_ORDER.forEach(function (type) { if (byType[type]) cols.push(byType[type]); });
-  Object.keys(byType).forEach(function (type) { if (TYPE_ORDER.indexOf(type) === -1) cols.push(byType[type]); });
-  const pools = {};
+  const open = {};
+  needs.forEach(function (row) {
+    if (row.fixed) {
+      cols.push({ type: row.type, n: row.n, sub: row.sub || "", notes: row.note ? [row.note] : [], cells: row.fixed, i: cols.length });
+      return;
+    }
+    if (!open[row.type]) {
+      open[row.type] = { type: row.type, n: row.n, sub: row.sub || "", notes: [], cells: null, i: cols.length };
+      cols.push(open[row.type]);
+    }
+    if (row.note && open[row.type].notes.indexOf(row.note) === -1) open[row.type].notes.push(row.note);
+  });
+  cols.sort(function (a, b) {
+    const d = TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type);
+    return d || a.i - b.i;
+  });
   const boxes = [];
+  function addBox(box) { if (boxes.indexOf(box) === -1) boxes.push(box); }
   cols.forEach(function (col) {
-    pools[col.type] = {};
+    if (col.cells) { Object.keys(col.cells).forEach(addBox); return; }
+    col.cells = {};
     (D.tiles[col.type] || []).forEach(function (p) {
       if (!have[p[0]]) return;
-      pools[col.type][p[0]] = p[1];
-      if (boxes.indexOf(p[0]) === -1) boxes.push(p[0]);
+      col.cells[p[0]] = p[1];
+      addBox(p[0]);
     });
   });
   boxes.sort(function (a, b) {
@@ -6316,7 +6496,10 @@ function tileTable(needs, have) {
   let html = '<p class="tile-lead">Это все тайлы, которые можно положить в эту миссию. Выберите:</p>';
   html += '<div class="tile-scroll"><table class="tilepick"><thead><tr><th></th>';
   cols.forEach(function (col) {
-    html += '<th scope="col"><span class="role">' + (TYPE_HEAD[col.type] || col.type) + '</span><span class="take">' + col.n + "</span></th>";
+    const role = TYPE_HEAD[col.type] || col.type;
+    html += '<th scope="col"><span class="role">' + role + "</span>" +
+      (col.sub ? '<span class="sub">' + col.sub + "</span>" : "") +
+      '<span class="take">' + col.n + "</span></th>";
   });
   html += "</tr></thead><tbody>";
   if (!boxes.length) {
@@ -6325,17 +6508,20 @@ function tileTable(needs, have) {
   boxes.forEach(function (box) {
     html += '<tr><th scope="row">' + BOX_NAME[box] + "</th>";
     cols.forEach(function (col) {
-      const codes = pools[col.type][box];
+      const codes = col.cells[box];
       html += "<td>" + (codes ? tileCells(box, codes) : '<span class="gap">—</span>') + "</td>";
     });
     html += "</tr>";
   });
   html += "</tbody></table></div>";
   cols.forEach(function (col) {
-    if (!Object.keys(pools[col.type]).length) col.notes.push('<span class="warn">отмеченных коробок с такими тайлами нет</span>');
+    if (!Object.keys(col.cells).length) col.notes.push('<span class="warn">отмеченных коробок с такими тайлами нет</span>');
   });
   const notes = [];
-  cols.forEach(function (col) { col.notes.forEach(function (note) { notes.push("<li><b>" + (TYPE_HEAD[col.type] || col.type) + ".</b> " + note + "</li>"); }); });
+  cols.forEach(function (col) {
+    const head = (TYPE_HEAD[col.type] || col.type) + (col.sub ? ", " + col.sub : "");
+    col.notes.forEach(function (note) { notes.push("<li><b>" + head + ".</b> " + note + "</li>"); });
+  });
   if (notes.length) html += '<ul class="tile-notes">' + notes.join("") + "</ul>";
   return html;
 }
@@ -6548,6 +6734,10 @@ function items(list, ctx, keepNeed) {
         return "";
       });
       if (rows.length) { out.push({ kind: "need", rows: rows }); return; }
+    }
+    if (keepNeed) {
+      const prose = proseColumns(it, ctx);
+      if (prose) { out.push({ kind: "need", rows: prose }); return; }
     }
     const t = fill(it, ctx);
     if (t) out.push(t);

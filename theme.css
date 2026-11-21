@@ -205,6 +205,13 @@ table.tilepick thead th {
   white-space: nowrap;
 }
 table.tilepick .role { display: block; }
+table.tilepick .sub {
+  display: block;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
 table.tilepick .take {
   display: block;
   margin-top: 0.12rem;
